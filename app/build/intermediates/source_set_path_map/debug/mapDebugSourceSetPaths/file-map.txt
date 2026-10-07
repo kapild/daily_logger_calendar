@@ -1,0 +1,60 @@
+dev.kapil.healthcal.app-activity-1.10.1-0 /Users/kapild/.gradle/caches/8.13/transforms/121ee40756427efc38d13f3febb3db81/transformed/activity-1.10.1/res
+dev.kapil.healthcal.app-work-runtime-ktx-2.10.1-1 /Users/kapild/.gradle/caches/8.13/transforms/1317f475379c4fbb1336456872f18864/transformed/work-runtime-ktx-2.10.1/res
+dev.kapil.healthcal.app-room-runtime-2.6.1-2 /Users/kapild/.gradle/caches/8.13/transforms/13835be85982f7e3b47f396183b9015e/transformed/room-runtime-2.6.1/res
+dev.kapil.healthcal.app-play-services-base-18.5.0-3 /Users/kapild/.gradle/caches/8.13/transforms/14edaf85825206ba86b394ecdf5a1987/transformed/play-services-base-18.5.0/res
+dev.kapil.healthcal.app-lifecycle-viewmodel-savedstate-2.8.7-4 /Users/kapild/.gradle/caches/8.13/transforms/153f91c9cf5d09346b1f66e4dce44450/transformed/lifecycle-viewmodel-savedstate-2.8.7/res
+dev.kapil.healthcal.app-lifecycle-viewmodel-ktx-2.8.7-5 /Users/kapild/.gradle/caches/8.13/transforms/170a1e17ab8263ae5d097128cd5ba5a3/transformed/lifecycle-viewmodel-ktx-2.8.7/res
+dev.kapil.healthcal.app-lifecycle-service-2.8.7-6 /Users/kapild/.gradle/caches/8.13/transforms/197ff40d7dab842707c0bc768012aa29/transformed/lifecycle-service-2.8.7/res
+dev.kapil.healthcal.app-animation-release-7 /Users/kapild/.gradle/caches/8.13/transforms/2124353b91f4ff5259dbae7a609bae84/transformed/animation-release/res
+dev.kapil.healthcal.app-activity-compose-1.10.1-8 /Users/kapild/.gradle/caches/8.13/transforms/220ca9177388dcbbf169341548c1f451/transformed/activity-compose-1.10.1/res
+dev.kapil.healthcal.app-play-services-basement-18.4.0-9 /Users/kapild/.gradle/caches/8.13/transforms/2e9b78cec455de48abf36ae119c73539/transformed/play-services-basement-18.4.0/res
+dev.kapil.healthcal.app-sqlite-framework-2.4.0-10 /Users/kapild/.gradle/caches/8.13/transforms/3c2e99152f4602cd0ea1827be49fd21c/transformed/sqlite-framework-2.4.0/res
+dev.kapil.healthcal.app-savedstate-1.2.1-11 /Users/kapild/.gradle/caches/8.13/transforms/5e26cc88d84d20cf4444c242857c61fe/transformed/savedstate-1.2.1/res
+dev.kapil.healthcal.app-lifecycle-livedata-2.8.7-12 /Users/kapild/.gradle/caches/8.13/transforms/61b4b07e1f2c369b47c8eb71ba04c058/transformed/lifecycle-livedata-2.8.7/res
+dev.kapil.healthcal.app-profileinstaller-1.4.0-13 /Users/kapild/.gradle/caches/8.13/transforms/6599ae786e31d9b6891d50219143de82/transformed/profileinstaller-1.4.0/res
+dev.kapil.healthcal.app-emoji2-1.4.0-14 /Users/kapild/.gradle/caches/8.13/transforms/677a5581613057d268786ddf5eff5975/transformed/emoji2-1.4.0/res
+dev.kapil.healthcal.app-foundation-release-15 /Users/kapild/.gradle/caches/8.13/transforms/6feebf33f6dcc94a86e0a92d7c1ee911/transformed/foundation-release/res
+dev.kapil.healthcal.app-foundation-layout-release-16 /Users/kapild/.gradle/caches/8.13/transforms/70d6193b2df908921e4356ad8e69502c/transformed/foundation-layout-release/res
+dev.kapil.healthcal.app-room-ktx-2.6.1-17 /Users/kapild/.gradle/caches/8.13/transforms/71852d8aba945f81e62321585482dd1d/transformed/room-ktx-2.6.1/res
+dev.kapil.healthcal.app-ui-graphics-release-18 /Users/kapild/.gradle/caches/8.13/transforms/7a06a271303c63a66c5d5133744facb7/transformed/ui-graphics-release/res
+dev.kapil.healthcal.app-ui-unit-release-19 /Users/kapild/.gradle/caches/8.13/transforms/8174bb47280909f1e0760700cd0a5f2b/transformed/ui-unit-release/res
+dev.kapil.healthcal.app-ui-text-release-20 /Users/kapild/.gradle/caches/8.13/transforms/8254a973d694b40d06aef0ac7b223328/transformed/ui-text-release/res
+dev.kapil.healthcal.app-lifecycle-livedata-core-2.8.7-21 /Users/kapild/.gradle/caches/8.13/transforms/840ce0782b83d28fbd83ff32dc65baa3/transformed/lifecycle-livedata-core-2.8.7/res
+dev.kapil.healthcal.app-work-runtime-2.10.1-22 /Users/kapild/.gradle/caches/8.13/transforms/88e79e9c7e6e91e2c69fac3f2c453708/transformed/work-runtime-2.10.1/res
+dev.kapil.healthcal.app-annotation-experimental-1.4.1-23 /Users/kapild/.gradle/caches/8.13/transforms/8a8dffe61a3814009476d4095064e549/transformed/annotation-experimental-1.4.1/res
+dev.kapil.healthcal.app-core-viewtree-1.0.0-24 /Users/kapild/.gradle/caches/8.13/transforms/8c4af57bf7a5b190ae1662c02bc2bf58/transformed/core-viewtree-1.0.0/res
+dev.kapil.healthcal.app-runtime-saveable-release-25 /Users/kapild/.gradle/caches/8.13/transforms/906cf4e968e4a36ccb419551860df0a5/transformed/runtime-saveable-release/res
+dev.kapil.healthcal.app-connect-client-1.1.0-26 /Users/kapild/.gradle/caches/8.13/transforms/94126e3b02cb7346ac9ec76da6407724/transformed/connect-client-1.1.0/res
+dev.kapil.healthcal.app-material-ripple-release-27 /Users/kapild/.gradle/caches/8.13/transforms/95458e46cb4dc979827a6b31c58c1a23/transformed/material-ripple-release/res
+dev.kapil.healthcal.app-core-ktx-1.16.0-28 /Users/kapild/.gradle/caches/8.13/transforms/965477b619286179dad16dfe377cb055/transformed/core-ktx-1.16.0/res
+dev.kapil.healthcal.app-savedstate-ktx-1.2.1-29 /Users/kapild/.gradle/caches/8.13/transforms/9ae70d85f31fc743a40170bca0162588/transformed/savedstate-ktx-1.2.1/res
+dev.kapil.healthcal.app-ui-geometry-release-30 /Users/kapild/.gradle/caches/8.13/transforms/9c4bc854e55e86535943311edc9ad445/transformed/ui-geometry-release/res
+dev.kapil.healthcal.app-ui-util-release-31 /Users/kapild/.gradle/caches/8.13/transforms/a1fc2b43fe6296782bf61f5df32cd9c0/transformed/ui-util-release/res
+dev.kapil.healthcal.app-core-runtime-2.2.0-32 /Users/kapild/.gradle/caches/8.13/transforms/a23c2f341ba20fe086c00b4f65725c74/transformed/core-runtime-2.2.0/res
+dev.kapil.healthcal.app-lifecycle-viewmodel-release-33 /Users/kapild/.gradle/caches/8.13/transforms/a283fe459bffa26a50300c4a35441d12/transformed/lifecycle-viewmodel-release/res
+dev.kapil.healthcal.app-runtime-release-34 /Users/kapild/.gradle/caches/8.13/transforms/a50ac6a456c1278062470fe5317ca5be/transformed/runtime-release/res
+dev.kapil.healthcal.app-lifecycle-runtime-ktx-release-35 /Users/kapild/.gradle/caches/8.13/transforms/aa6f9ba5c35efb0d75e72648bc3e63b9/transformed/lifecycle-runtime-ktx-release/res
+dev.kapil.healthcal.app-graphics-path-1.0.1-36 /Users/kapild/.gradle/caches/8.13/transforms/b0960cc15a859a291ed3bb3d85c7a6bf/transformed/graphics-path-1.0.1/res
+dev.kapil.healthcal.app-lifecycle-runtime-compose-release-37 /Users/kapild/.gradle/caches/8.13/transforms/b17b735df4f57ff2ac809daf2054e966/transformed/lifecycle-runtime-compose-release/res
+dev.kapil.healthcal.app-core-1.16.0-38 /Users/kapild/.gradle/caches/8.13/transforms/b98429181af570408e01ac309af52f45/transformed/core-1.16.0/res
+dev.kapil.healthcal.app-lifecycle-runtime-release-39 /Users/kapild/.gradle/caches/8.13/transforms/bacae0ac5b140cae73494a0f7c1adb0a/transformed/lifecycle-runtime-release/res
+dev.kapil.healthcal.app-sqlite-2.4.0-40 /Users/kapild/.gradle/caches/8.13/transforms/c1d25d2ffb30bd1aef2fb3a7514caa0b/transformed/sqlite-2.4.0/res
+dev.kapil.healthcal.app-customview-poolingcontainer-1.0.0-41 /Users/kapild/.gradle/caches/8.13/transforms/c293168f569df0585a60cfa814f34d49/transformed/customview-poolingcontainer-1.0.0/res
+dev.kapil.healthcal.app-startup-runtime-1.1.1-42 /Users/kapild/.gradle/caches/8.13/transforms/c913dd049ea3c9198b892275754a4adb/transformed/startup-runtime-1.1.1/res
+dev.kapil.healthcal.app-ui-release-43 /Users/kapild/.gradle/caches/8.13/transforms/cb3664193943145143e0614c66c201f1/transformed/ui-release/res
+dev.kapil.healthcal.app-tracing-1.2.0-44 /Users/kapild/.gradle/caches/8.13/transforms/ce5179972da6433abb775213c208e984/transformed/tracing-1.2.0/res
+dev.kapil.healthcal.app-animation-core-release-45 /Users/kapild/.gradle/caches/8.13/transforms/d3e03d18bbbad1b9528e68e214928744/transformed/animation-core-release/res
+dev.kapil.healthcal.app-material3-release-46 /Users/kapild/.gradle/caches/8.13/transforms/d59d21144266c3967fa83fea21bfb86a/transformed/material3-release/res
+dev.kapil.healthcal.app-material-icons-core-release-47 /Users/kapild/.gradle/caches/8.13/transforms/da4180fa32037093caa90a461c4a5ec1/transformed/material-icons-core-release/res
+dev.kapil.healthcal.app-tracing-ktx-1.2.0-48 /Users/kapild/.gradle/caches/8.13/transforms/dfae2b87fdee181a1bdaf19ff311b386/transformed/tracing-ktx-1.2.0/res
+dev.kapil.healthcal.app-activity-ktx-1.10.1-49 /Users/kapild/.gradle/caches/8.13/transforms/f4c417156fbc3df338293b6469e58c26/transformed/activity-ktx-1.10.1/res
+dev.kapil.healthcal.app-lifecycle-process-2.8.7-50 /Users/kapild/.gradle/caches/8.13/transforms/f6b47cbac12e1e9b7a8a141424aebf48/transformed/lifecycle-process-2.8.7/res
+dev.kapil.healthcal.app-lifecycle-livedata-core-ktx-2.8.7-51 /Users/kapild/.gradle/caches/8.13/transforms/f9a5860011a2929c4b8809c188461bb5/transformed/lifecycle-livedata-core-ktx-2.8.7/res
+dev.kapil.healthcal.app-pngs-52 /Users/kapild/Desktop/Desktop - Kapil’s MacBook Air/HealthCal/app/build/generated/res/pngs/debug
+dev.kapil.healthcal.app-resValues-53 /Users/kapild/Desktop/Desktop - Kapil’s MacBook Air/HealthCal/app/build/generated/res/resValues/debug
+dev.kapil.healthcal.app-updated_navigation_xml-54 /Users/kapild/Desktop/Desktop - Kapil’s MacBook Air/HealthCal/app/build/generated/updated_navigation_xml/debug
+dev.kapil.healthcal.app-packageDebugResources-55 /Users/kapild/Desktop/Desktop - Kapil’s MacBook Air/HealthCal/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+dev.kapil.healthcal.app-packageDebugResources-56 /Users/kapild/Desktop/Desktop - Kapil’s MacBook Air/HealthCal/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+dev.kapil.healthcal.app-debug-57 /Users/kapild/Desktop/Desktop - Kapil’s MacBook Air/HealthCal/app/build/intermediates/merged_res/debug/mergeDebugResources
+dev.kapil.healthcal.app-debug-58 /Users/kapild/Desktop/Desktop - Kapil’s MacBook Air/HealthCal/app/src/debug/res
+dev.kapil.healthcal.app-main-59 /Users/kapild/Desktop/Desktop - Kapil’s MacBook Air/HealthCal/app/src/main/res

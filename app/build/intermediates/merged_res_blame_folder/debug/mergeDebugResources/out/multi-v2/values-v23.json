@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "dev.kapil.healthcal.app-mergeDebugResources-54:/values-v23/values-v23.xml",
+            "map": [
+                {
+                    "source": "/Users/kapild/.gradle/caches/8.13/transforms/88e79e9c7e6e91e2c69fac3f2c453708/transformed/work-runtime-2.10.1/res/values-v23/values-v23.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,121",
+                        "endColumns": "65,62",
+                        "endOffsets": "116,179"
+                    }
+                }
+            ]
+        }
+    ]
+}

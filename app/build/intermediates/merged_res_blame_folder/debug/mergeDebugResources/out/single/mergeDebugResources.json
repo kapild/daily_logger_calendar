@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "dev.kapil.healthcal.app-debug-56:/drawable_ic_launcher.xml.flat",
+        "source": "dev.kapil.healthcal.app-main-58:/drawable/ic_launcher.xml"
+    },
+    {
+        "merged": "dev.kapil.healthcal.app-debug-56:/drawable_ic_tile.xml.flat",
+        "source": "dev.kapil.healthcal.app-main-58:/drawable/ic_tile.xml"
+    }
+]
