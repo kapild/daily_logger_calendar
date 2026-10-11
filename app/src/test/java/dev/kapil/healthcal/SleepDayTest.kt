@@ -31,15 +31,30 @@ class SleepDayTest {
         assertEquals(lastNight, pick(listOf(lastNight, nap)))
     }
 
-    @Test fun nothingWhenNoSleepEndedToday() {
-        assertNull(pick(listOf(Night("night before", at(10, 6, 0), 480))))
+    @Test fun afterMidnightKeepsShowingYesterdaysNight() {
+        // 1 am on the 11th: nothing has ended today. Yesterday had a night
+        // and an afternoon nap; the night is still the one to show.
+        val night = Night("night", at(10, 6, 34), 475)
+        val nap = Night("nap", at(10, 16, 30), 77)
+        assertEquals(night, pick(listOf(nap, night)))
+    }
+
+    @Test fun todaysSleepReplacesYesterdays() {
+        val yesterday = Night("yesterday", at(10, 6, 34), 475)
+        val today = Night("today", at(11, 6, 10), 400)
+        assertEquals(today, pick(listOf(yesterday, today)))
+    }
+
+    @Test fun nothingOlderThanYesterdayIsShown() {
+        assertNull(pick(listOf(Night("two days ago", at(9, 6, 0), 480))))
         assertNull(pick(emptyList()))
     }
 
     @Test fun wakeDateIsLocalNotUtc() {
-        // 11:30 pm on the 10th in Los Angeles is already the 11th in UTC.
-        val lateNap = Night("late", at(10, 23, 30), 60)
-        assertNull(pick(listOf(lateNap)))
+        // 11:30 pm on the 9th in Los Angeles is already the 10th in UTC, but
+        // locally it is two days back from the 11th, so it is not shown.
+        val late = Night("late", at(9, 23, 30), 60)
+        assertNull(pick(listOf(late)))
     }
 
     @Test fun allDayEventsRunMidnightToMidnightUtc() {
