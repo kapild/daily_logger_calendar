@@ -115,7 +115,7 @@ enum class Kind(val label: String) {
 
     companion object {
         fun ofTag(tag: String): Kind = when {
-            tag.startsWith("sleep:") -> SLEEP
+            tag.startsWith("sleep:") || tag.startsWith(SleepDay.TAG_PREFIX) -> SLEEP
             tag.startsWith("ex:") -> WORKOUT
             else -> PLACES
         }

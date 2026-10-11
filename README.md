@@ -23,6 +23,8 @@ Source: Google Health
 [hc:sleep:…]
 ```
 
+**Today's sleep marker** — one all-day event on the day you woke up, with the same title as last night's sleep event. It is there for a watch face: a watch only keeps calendar events that have not ended, so it never has the real sleep event. The app keeps just one marker, replacing yesterday's each morning. A nap never replaces the night. It is written to the sleep calendar whenever sleep export is on.
+
 **Workouts** — event from start to end, titled e.g. `Run | Dur: 45 mins | Start: 6:10 pm End: 6:55 pm`, with type, times, duration and source in notes.
 
 Events are marked **Free** so they don't block your availability. The last line `[hc:…]` is how the app recognises its own events; leave it in place.
