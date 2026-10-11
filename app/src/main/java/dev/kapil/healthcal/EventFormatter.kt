@@ -4,6 +4,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -17,6 +18,8 @@ data class DesiredEvent(
     val endMs: Long,
     val title: String,
     val description: String,
+    /** True for an all-day event; startMs/endMs are then midnights in UTC. */
+    val allDay: Boolean = false,
 )
 
 object EventFormatter {
@@ -24,6 +27,40 @@ object EventFormatter {
     const val TAG_PREFIX = "[hc:"
 
     private val TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault())
+
+    /** Time asleep across all stages, or time in bed when no stages were recorded. */
+    fun asleepOrInBed(r: SleepSessionRecord): Duration {
+        val asleep = r.stages
+            .filter {
+                it.stage == SleepSessionRecord.STAGE_TYPE_DEEP ||
+                    it.stage == SleepSessionRecord.STAGE_TYPE_REM ||
+                    it.stage == SleepSessionRecord.STAGE_TYPE_LIGHT ||
+                    it.stage == SleepSessionRecord.STAGE_TYPE_SLEEPING
+            }
+            .fold(Duration.ZERO) { acc, s -> acc.plus(Duration.between(s.startTime, s.endTime)) }
+        return if (!asleep.isZero) asleep else Duration.between(r.startTime, r.endTime)
+    }
+
+    /**
+     * The all-day "today's sleep" marker for [date], the day you woke up.
+     * Its title is the same as the sleep event's, so anything that reads one
+     * can read the other. See [SleepDay] for why it exists.
+     */
+    fun sleepDayMarker(r: SleepSessionRecord, calendarId: Long, date: LocalDate): DesiredEvent {
+        val offset = r.startZoneOffset ?: systemOffset(r.startTime)
+        val tag = SleepDay.tag(date)
+        return DesiredEvent(
+            tag = tag,
+            calendarId = calendarId,
+            startMs = SleepDay.allDayStartMs(date),
+            endMs = SleepDay.allDayEndMs(date),
+            title = spanTitle("Sleep", asleepOrInBed(r), r.startTime, r.endTime, offset),
+            description = "Last night's sleep, repeated as an all-day event so the watch face can show it.\n" +
+                "The full details are in the sleep event itself.\n\n" +
+                "$TAG_PREFIX$tag]",
+            allDay = true,
+        )
+    }
 
     fun sleep(r: SleepSessionRecord, calendarId: Long, sourceLabel: String): DesiredEvent {
         val offset = r.startZoneOffset ?: systemOffset(r.startTime)

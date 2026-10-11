@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # The repo has no gradlew script, so install the Gradle version the
+      # wrapper properties name.
+      - name: Read Gradle version
+        id: gradle
+        run: echo "version=$(grep -oE 'gradle-[0-9.]+' gradle/wrapper/gradle-wrapper.properties | head -1 | cut -d- -f2)" >> "$GITHUB_OUTPUT"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: ${{ steps.gradle.outputs.version }}
+
+      # local.properties points at a path on one Mac, and the daemon-JVM file
+      # asks for a JetBrains JDK. The runner has its own SDK and JDK.
+      - name: Use the runner's Android SDK and JDK
+        run: rm -f local.properties gradle/gradle-daemon-jvm.properties
+
+      - name: Unit tests
+        run: gradle :app:testDebugUnitTest
+
+      - name: Build debug APK
+        run: gradle :app:assembleDebug

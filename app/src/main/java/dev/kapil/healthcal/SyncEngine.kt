@@ -1,12 +1,14 @@
 package dev.kapil.healthcal
 
 import android.content.Context
+import androidx.health.connect.client.records.SleepSessionRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneId
 
 /** One lock for every calendar writer, so health and places never race. */
 object SyncLock {
@@ -56,6 +58,8 @@ object SyncEngine {
         val pending = mutableListOf<Pending>()
         var sleepRead = 0
         var workoutsRead = 0
+        // Sleep sessions from sources you have not excluded, for the day marker below.
+        val nights = mutableListOf<SleepSessionRecord>()
 
         if (prefs.exportSleep) {
             val calendarId = prefs.sleepCalendarId
@@ -68,6 +72,7 @@ object SyncEngine {
                     val pkg = r.metadata.dataOrigin.packageName
                     seen += pkg
                     pending += Pending(EventFormatter.sleep(r, calendarId, label(pkg)), Kind.SLEEP, label(pkg), pkg in excluded)
+                    if (pkg !in excluded) nights += r
                 }
             }
         }
@@ -112,8 +117,45 @@ object SyncEngine {
         }
         if (skipped > 0) notes += "Left out $skipped you removed."
 
+        if (prefs.exportSleep && prefs.sleepCalendarId >= 0) {
+            runCatching { writeSleepDayMarker(context, prefs.sleepCalendarId, nights, to) }
+                .onFailure { notes += "Could not update today's sleep marker." }
+        }
+
         saveReport(context, from, to, pending, outcomes)
         return SyncResult(sleepRead, workoutsRead, added, fixed, same, duplicates, notes)
+    }
+
+    /**
+     * Keeps exactly one all-day "today's sleep" marker in the sleep calendar:
+     * writes or fixes today's, and removes markers from earlier days. It is
+     * kept out of the sync counts, since it is not a record of its own.
+     */
+    private fun writeSleepDayMarker(
+        context: Context,
+        calendarId: Long,
+        nights: List<SleepSessionRecord>,
+        now: Instant,
+    ) {
+        val zone = ZoneId.systemDefault()
+        val today = now.atZone(zone).toLocalDate()
+        val lastNight = SleepDay.pick(
+            nights,
+            today,
+            zone,
+            wakeMs = { it.endTime.toEpochMilli() },
+            asleepMinutes = { EventFormatter.asleepOrInBed(it).toMinutes() },
+        )
+        val wanted = listOfNotNull(lastNight?.let { EventFormatter.sleepDayMarker(it, calendarId, today) })
+        CalendarReconciler.apply(
+            context,
+            calendarId,
+            wanted,
+            // Wide enough to find and clear markers left from earlier days.
+            windowStartMs = now.minus(Duration.ofDays(14)).toEpochMilli(),
+            windowEndMs = now.plus(Duration.ofDays(2)).toEpochMilli(),
+            staleTagPrefix = SleepDay.TAG_PREFIX,
+        )
     }
 
     /** Remember every record this scan found, for the Found tab. */

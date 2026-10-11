@@ -246,7 +246,9 @@ object CalendarRepo {
         put(Events.DTEND, endMs)
         put(Events.TITLE, title)
         put(Events.DESCRIPTION, description)
-        put(Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
+        // Android requires all-day events to be stored in UTC.
+        put(Events.ALL_DAY, if (allDay) 1 else 0)
+        put(Events.EVENT_TIMEZONE, if (allDay) "UTC" else TimeZone.getDefault().id)
         // Sleep and workouts shouldn't block your availability.
         put(Events.AVAILABILITY, Events.AVAILABILITY_FREE)
     }
