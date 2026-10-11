@@ -6,8 +6,8 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 
 /**
- * The "today's sleep" marker: one all-day event on the day you woke up,
- * carrying last night's sleep in its title.
+ * The "today's sleep" marker: one all-day event on today's date, carrying
+ * your most recent night's sleep in its title.
  *
  * It exists for the watch. A watch only keeps calendar events that have not
  * ended yet, so it never has the real sleep event, which ended when you woke.
@@ -21,9 +21,13 @@ object SleepDay {
     fun tag(date: LocalDate): String = "$TAG_PREFIX$date"
 
     /**
-     * Which night to show for [today]: of the sleeps that ended today, the
-     * one with the most time asleep, so a nap never replaces the night.
-     * Returns null when no sleep ended today.
+     * Which sleep to show on [today]'s marker.
+     *
+     * If a sleep ended today, the one with the most time asleep, so a nap
+     * never replaces the night. If none has ended today yet (it is after
+     * midnight and you have not slept, or the night has not synced), the
+     * same choice from yesterday, so the marker keeps showing your last
+     * night until a new one arrives. Nothing older than yesterday is shown.
      */
     fun <T> pick(
         nights: List<T>,
@@ -31,9 +35,11 @@ object SleepDay {
         zone: ZoneId,
         wakeMs: (T) -> Long,
         asleepMinutes: (T) -> Long,
-    ): T? = nights
-        .filter { Instant.ofEpochMilli(wakeMs(it)).atZone(zone).toLocalDate() == today }
-        .maxByOrNull(asleepMinutes)
+    ): T? {
+        val byWakeDate = nights.groupBy { Instant.ofEpochMilli(wakeMs(it)).atZone(zone).toLocalDate() }
+        val latest = byWakeDate[today] ?: byWakeDate[today.minusDays(1)] ?: return null
+        return latest.maxByOrNull(asleepMinutes)
+    }
 
     /** An all-day event is stored from midnight UTC to the next midnight UTC. */
     fun allDayStartMs(date: LocalDate): Long = date.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()

@@ -42,7 +42,7 @@ object EventFormatter {
     }
 
     /**
-     * The all-day "today's sleep" marker for [date], the day you woke up.
+     * The all-day "today's sleep" marker, placed on [date] (today).
      * Its title is the same as the sleep event's, so anything that reads one
      * can read the other. See [SleepDay] for why it exists.
      */

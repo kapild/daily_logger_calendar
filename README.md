@@ -23,7 +23,7 @@ Source: Google Health
 [hc:sleep:…]
 ```
 
-**Today's sleep marker** — one all-day event on the day you woke up, with the same title as last night's sleep event. It is there for a watch face: a watch only keeps calendar events that have not ended, so it never has the real sleep event. The app keeps just one marker, replacing yesterday's each morning. A nap never replaces the night. It is written to the sleep calendar whenever sleep export is on.
+**Today's sleep marker** — one all-day event on today's date, with the same title as your most recent night's sleep event. It is there for a watch face: a watch only keeps calendar events that have not ended, so it never has the real sleep event. The app keeps just one marker and moves it forward each day. A nap never replaces the night, and after midnight it keeps showing last night until a new night syncs. It is written to the sleep calendar whenever sleep export is on.
 
 **Workouts** — event from start to end, titled e.g. `Run | Dur: 45 mins | Start: 6:10 pm End: 6:55 pm`, with type, times, duration and source in notes.
 
