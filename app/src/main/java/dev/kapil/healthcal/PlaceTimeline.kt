@@ -24,8 +24,18 @@ internal data class Trip(val from: Place, val to: Place, val start: Long, val en
 
 internal data class Drive(val start: Long, val end: Long, val id: Long, val device: String)
 
-/** Time on the shuttle: from joining its Wi-Fi to leaving it. */
-internal data class ShuttleRide(val start: Long, val end: Long, val id: Long, val network: String)
+/**
+ * Time on the shuttle: from joining its Wi-Fi to the first sign you got off,
+ * which is leaving the Wi-Fi or your car connecting ([endSource] "wifi" or
+ * "bluetooth").
+ */
+internal data class ShuttleRide(
+    val start: Long,
+    val end: Long,
+    val id: Long,
+    val network: String,
+    val endSource: String = "wifi",
+)
 
 internal class Timeline(
     val visits: List<Visit>,
@@ -198,7 +208,9 @@ internal object PlaceTimeline {
                 SignalType.SHUTTLE_OFF -> {
                     val open = rideOpen
                     if (open != null) {
-                        if (s.ts - open.start in MIN_RIDE_MS..MAX_RIDE_MS) rides += open.copy(end = s.ts)
+                        if (s.ts - open.start in MIN_RIDE_MS..MAX_RIDE_MS) {
+                            rides += open.copy(end = s.ts, endSource = s.source)
+                        }
                         rideOpen = null
                     }
                 }

@@ -70,7 +70,15 @@ class BluetoothReceiver : BroadcastReceiver() {
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> SignalType.CAR_OFF
             else -> return
         }
-        Signals.record(context, System.currentTimeMillis(), type, null, "bluetooth", PlaceMonitor.deviceName(device))
+        val now = System.currentTimeMillis()
+        if (type == SignalType.CAR_ON) {
+            // Getting into the car ends a shuttle ride, usually a couple of minutes after
+            // stepping off. Logged first so the ride closes at the earliest signal.
+            ShuttleWatch.openRide(context)?.let { ride ->
+                Signals.record(context, now, SignalType.SHUTTLE_OFF, null, "bluetooth", ride.detail)
+            }
+        }
+        Signals.record(context, now, type, null, "bluetooth", PlaceMonitor.deviceName(device))
     }
 }
 

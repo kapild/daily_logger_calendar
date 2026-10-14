@@ -9,13 +9,12 @@ import androidx.work.WorkerParameters
 import java.util.concurrent.TimeUnit
 
 /**
- * Notices when you get off the shuttle.
- *
- * Android wakes the app when a Wi-Fi network connects, not when one drops.
- * Joining another network is caught in [SignalReceiver]; for dropping to
- * mobile data, this checks every few minutes while a ride is open and logs
- * "off shuttle Wi-Fi" the first time the phone is no longer on it. The ride's
- * end time is therefore up to [CHECK_MINUTES] late.
+ * Notices when you get off the shuttle. Whichever of these comes first ends the ride:
+ *  - your car's Bluetooth connecting ([BluetoothReceiver])
+ *  - the phone joining another Wi-Fi network ([SignalReceiver])
+ *  - this check, every [CHECK_MINUTES] while a ride is open, finding the phone
+ *    no longer on the shuttle Wi-Fi. Android wakes apps when a Wi-Fi network
+ *    connects but not when one drops, so this covers dropping to mobile data.
  */
 object ShuttleWatch {
     const val CHECK_MINUTES = 3L

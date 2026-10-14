@@ -49,7 +49,7 @@ Changing the title format doesn't create duplicates: the next sync or Backfill r
 
 - **Home, office, gym:** a geofence and/or the place's Wi-Fi. Geofences give exact leave times; Wi-Fi gives fast arrivals. Set both when you can. For a Wi-Fi-only place, leaving is inferred when your car connects or you join the shuttle Wi-Fi.
 - **Car:** check your car's Bluetooth. Connect = drive start, disconnect = drive end.
-- **Shuttle:** add the shuttle Wi-Fi name. Your phone must have joined that network before. The ride starts when the phone joins it and ends when the phone leaves it: at once if it joins another Wi-Fi, otherwise within about 3 minutes, from a check that runs only while you are on the shuttle. A drop of up to 10 minutes counts as the same ride.
+- **Shuttle:** add the shuttle Wi-Fi name. Your phone must have joined that network before. The ride starts when the phone joins it and ends at the first sign you got off: your car connecting, the phone joining another Wi-Fi, or a check every 3 minutes (run only while you are on the shuttle) finding the phone off the shuttle Wi-Fi. A drop of up to 10 minutes counts as the same ride.
 
 Leaving and coming back within 10 minutes counts as never having left, so GPS jitter doesn't create junk events. New signals show up in the calendar within about 2 minutes (11 minutes for a "left" event, to rule out a quick return). The **Recent signals** list in the app shows exactly what was logged, which helps when tuning radius or Wi-Fi names.
 

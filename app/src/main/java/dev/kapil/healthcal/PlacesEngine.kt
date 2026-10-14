@@ -224,7 +224,8 @@ object PlacesEngine {
             title = EventFormatter.spanTitle(
                 title, Duration.ofMillis(r.end - r.start), Instant.ofEpochMilli(r.start), Instant.ofEpochMilli(r.end),
             ),
-            description = "On shuttle Wi-Fi \"${r.network}\" from ${clock(r.start)} to ${clock(r.end)}" +
+            description = "Joined shuttle Wi-Fi \"${r.network}\" ${clock(r.start)}, " +
+                (if (r.endSource == "bluetooth") "car connected ${clock(r.end)}" else "left it ${clock(r.end)}") +
                 "$whole\n\n${EventFormatter.TAG_PREFIX}$tag]",
         )
     }

@@ -61,6 +61,33 @@ class ShuttleRideTest {
         assertTrue(titles.none { it.startsWith("Commute home by shuttle | Dur: 1 hour") })
     }
 
+    @Test fun carConnectingEndsTheRide() {
+        // The receiver logs "off" with the car's Bluetooth when the car connects mid-ride.
+        val signals = listOf(
+            signal(at(16, 55), SignalType.LEAVE, Place.OFFICE),
+            shuttleOn(at(16, 58)),
+            signal(at(17, 38), SignalType.SHUTTLE_OFF, source = "bluetooth", detail = "gShuttle"),
+            signal(at(17, 38), SignalType.CAR_ON, source = "bluetooth", detail = "Car"),
+            shuttleOff(at(17, 40)), // the 3-minute check, too late: ignored
+            signal(at(18, 30), SignalType.CAR_OFF, source = "bluetooth", detail = "Car"),
+            signal(at(18, 51), SignalType.ARRIVE, Place.HOME),
+        )
+        val t = PlaceTimeline.build(signals, geofenced)
+        assertEquals(listOf(Triple(at(16, 58), at(17, 38), "bluetooth")), t.rides.map { Triple(it.start, it.end, it.endSource) })
+        val titles = PlacesEngine.build(t, at(23), calendarId = 1).map { it.title }
+        assertTrue(titles.toString(), titles.any { it.startsWith("Commute home by shuttle | Dur: 40 mins |") })
+        assertTrue(titles.toString(), titles.any { it.startsWith("Work to home via shuttle and car | Dur: 1 hour 56 mins |") })
+    }
+
+    @Test fun wifiOffBeforeTheCarWins() {
+        val signals = listOf(
+            shuttleOn(at(16, 58)),
+            shuttleOff(at(17, 36)),
+            signal(at(17, 38), SignalType.SHUTTLE_OFF, source = "bluetooth", detail = "gShuttle"),
+        )
+        assertEquals(listOf(at(17, 36)), PlaceTimeline.build(signals, geofenced).rides.map { it.end })
+    }
+
     @Test fun carCommuteIsUnchanged() {
         val signals = listOf(
             signal(at(16, 55), SignalType.LEAVE, Place.OFFICE),
