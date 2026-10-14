@@ -15,9 +15,10 @@ import java.util.Locale
  *  - "Left home | At: 8:02 am", "Arrived office | At: 9:01 am", ...
  *  - "At work | Dur: 8 hours 39 mins | Start: 9:01 am End: 5:40 pm", and "Gym | ..."
  *  - "Commute to work by car | Dur: 52 mins | Start: ... End: ..."
- *  - By shuttle, two events: the ride, "Commute home by shuttle | Dur: 38 mins | ...",
- *    from joining the shuttle Wi-Fi to leaving it, and the door-to-door trip,
- *    "Work to home via shuttle | Dur: 1 hour 56 mins | ...".
+ *  - By shuttle, separate events that overlap: the door-to-door trip,
+ *    "Work to home via shuttle and car | Dur: 1 hour 56 mins | ...", the ride,
+ *    "Commute home by shuttle | Dur: 38 mins | ...", and any drive to or from
+ *    the stop, "Drive | Dur: 12 mins | ...".
  *  - "Drive | Dur: 23 mins | Start: ... End: ..." for car trips that aren't part of a commute
  *
  * [PlaceTimeline] decides the order of the day; this file only turns it into
@@ -101,6 +102,7 @@ object PlacesEngine {
         }
 
         val ridesInTrips = HashSet<ShuttleRide>()
+        val shuttleTrips = ArrayList<Trip>()
         for (trip in t.trips) {
             val legs = t.drives.filter { it.start < trip.end && it.end > trip.start }
             val driveMs = legs.sumOf { minOf(it.end, trip.end) - maxOf(it.start, trip.start) }
@@ -116,13 +118,17 @@ object PlacesEngine {
             out += trip(calendarId, trip, mode, byShuttle, legs, rides)
             for (r in rides) out += ride(calendarId, r, trip)
             ridesInTrips += rides
+            if (byShuttle) shuttleTrips += trip
         }
         for (r in t.rides) {
             if (r !in ridesInTrips) out += ride(calendarId, r, null)
         }
+        // A drive inside a car commute is that commute, so it gets no event of its
+        // own. A drive inside a shuttle trip (to or from the stop) does: the trip
+        // is then three events, door to door, the shuttle ride, and the drive.
         for (d in t.drives) {
-            val partOfTrip = t.trips.any { d.start < it.end && d.end > it.start }
-            if (!partOfTrip) out += drive(calendarId, d)
+            val overlaps = t.trips.filter { d.start < it.end && d.end > it.start }
+            if (overlaps.isEmpty() || overlaps.any { it in shuttleTrips }) out += drive(calendarId, d)
         }
         return out
     }

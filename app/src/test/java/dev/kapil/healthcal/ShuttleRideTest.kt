@@ -77,6 +77,8 @@ class ShuttleRideTest {
         val titles = PlacesEngine.build(t, at(23), calendarId = 1).map { it.title }
         assertTrue(titles.toString(), titles.any { it.startsWith("Commute home by shuttle | Dur: 40 mins |") })
         assertTrue(titles.toString(), titles.any { it.startsWith("Work to home via shuttle and car | Dur: 1 hour 56 mins |") })
+        // The drive from the stop is its own event too.
+        assertTrue(titles.toString(), titles.any { it.startsWith("Drive | Dur: 52 mins |") })
     }
 
     @Test fun wifiOffBeforeTheCarWins() {
@@ -97,5 +99,7 @@ class ShuttleRideTest {
         )
         val events = PlacesEngine.build(PlaceTimeline.build(signals, geofenced), at(23), calendarId = 1)
         assertTrue(events.map { it.title }.toString(), events.any { it.title.startsWith("Commute home by car | Dur: 47 mins |") })
+        // The commute is the drive, so no separate drive event.
+        assertTrue(events.none { it.title.startsWith("Drive |") })
     }
 }

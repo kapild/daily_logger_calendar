@@ -40,8 +40,10 @@ Turn on **Log places and drives** (step 4 in the app) and you also get:
 | Gym | `Gym | Dur: 55 mins | Start: ... End: ...` (visits under 10 minutes are ignored as drive-bys) |
 | Commute by car | `Commute to work by car | Dur: 45 mins | Start: 8:00 am End: 8:45 am` |
 | Commute by shuttle | `Commute home by shuttle | Dur: 38 mins | Start: 4:58 pm End: 5:36 pm`: the time your phone was on the shuttle Wi-Fi |
-| Door to door, by shuttle | `Work to home via shuttle | Dur: 1 hour 56 mins | Start: 4:55 pm End: 6:51 pm`: left one place to arrived at the other, including any stops |
-| Drive | `Drive | Dur: 23 mins | Start: ... End: ...` for car trips that aren't part of a commute |
+| Door to door, by shuttle | `Work to home via shuttle and car | Dur: 1 hour 56 mins | Start: 4:55 pm End: 6:51 pm`: left one place to arrived at the other, including any stops |
+
+A shuttle trip gives overlapping events: door to door, the shuttle ride, and a separate `Drive` for any car leg to or from the stop. A car-only commute stays one event.
+| Drive | `Drive | Dur: 23 mins | Start: ... End: ...` for car trips that aren't a car commute (including the drive to or from the shuttle stop) |
 
 Changing the title format doesn't create duplicates: the next sync or Backfill renames existing events in place.
 
