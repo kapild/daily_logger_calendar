@@ -14,7 +14,10 @@ import java.util.Locale
  * Builds calendar events from the signal log:
  *  - "Left home | At: 8:02 am", "Arrived office | At: 9:01 am", ...
  *  - "At work | Dur: 8 hours 39 mins | Start: 9:01 am End: 5:40 pm", and "Gym | ..."
- *  - "Commute to work by shuttle | Dur: 52 mins | Start: ... End: ..."
+ *  - "Commute to work by car | Dur: 52 mins | Start: ... End: ..."
+ *  - By shuttle, two events: the ride, "Commute home by shuttle | Dur: 38 mins | ...",
+ *    from joining the shuttle Wi-Fi to leaving it, and the door-to-door trip,
+ *    "Work to home via shuttle | Dur: 1 hour 56 mins | ...".
  *  - "Drive | Dur: 23 mins | Start: ... End: ..." for car trips that aren't part of a commute
  *
  * [PlaceTimeline] decides the order of the day; this file only turns it into
@@ -67,7 +70,7 @@ object PlacesEngine {
             "removed ${c.removed + c.duplicates}, ${c.same} unchanged."
     }
 
-    private fun build(t: Timeline, now: Long, calendarId: Long): List<DesiredEvent> {
+    internal fun build(t: Timeline, now: Long, calendarId: Long): List<DesiredEvent> {
         val out = ArrayList<DesiredEvent>()
 
         for ((index, v) in t.visits.withIndex()) {
@@ -97,18 +100,25 @@ object PlacesEngine {
             }
         }
 
+        val ridesInTrips = HashSet<ShuttleRide>()
         for (trip in t.trips) {
             val legs = t.drives.filter { it.start < trip.end && it.end > trip.start }
             val driveMs = legs.sumOf { minOf(it.end, trip.end) - maxOf(it.start, trip.start) }
             val mostlyCar = driveMs * 10 >= (trip.end - trip.start) * 6
-            val byShuttle = t.shuttleTimes.any { it in trip.start..trip.end }
+            val rides = t.rides.filter { it.start < trip.end && it.end > trip.start }
+            val byShuttle = rides.isNotEmpty() || t.shuttleTimes.any { it in trip.start..trip.end }
             val mode = when {
                 byShuttle && legs.isNotEmpty() -> "shuttle and car"
                 byShuttle -> "shuttle"
                 mostlyCar -> "car"
                 else -> null // a short drive at one end doesn't make it a car commute
             }
-            out += trip(calendarId, trip, mode, legs)
+            out += trip(calendarId, trip, mode, byShuttle, legs, rides)
+            for (r in rides) out += ride(calendarId, r, trip)
+            ridesInTrips += rides
+        }
+        for (r in t.rides) {
+            if (r !in ridesInTrips) out += ride(calendarId, r, null)
         }
         for (d in t.drives) {
             val partOfTrip = t.trips.any { d.start < it.end && d.end > it.start }
@@ -144,15 +154,39 @@ object PlacesEngine {
         )
     }
 
-    private fun trip(cal: Long, t: Trip, mode: String?, legs: List<Drive>): DesiredEvent {
+    /**
+     * The whole trip, door to door. By car it is the commute itself. By
+     * shuttle the commute is the ride (see [ride]), so this is titled as the
+     * door-to-door time instead: "Work to home via shuttle".
+     */
+    private fun trip(
+        cal: Long,
+        t: Trip,
+        mode: String?,
+        byShuttle: Boolean,
+        legs: List<Drive>,
+        rides: List<ShuttleRide>,
+    ): DesiredEvent {
         val tag = "${TAG_ROOT}trip:${t.id}"
-        val base = when {
-            t.from == Place.HOME && t.to == Place.OFFICE -> "Commute to work"
-            t.from == Place.OFFICE && t.to == Place.HOME -> "Commute home"
-            else -> "${t.from.label} to ${t.to.label.lowercase()}"
+        val title = if (byShuttle) {
+            val base = when {
+                t.from == Place.HOME && t.to == Place.OFFICE -> "Home to work"
+                t.from == Place.OFFICE && t.to == Place.HOME -> "Work to home"
+                else -> "${t.from.label} to ${t.to.label.lowercase()}"
+            }
+            "$base via $mode"
+        } else {
+            val base = when {
+                t.from == Place.HOME && t.to == Place.OFFICE -> "Commute to work"
+                t.from == Place.OFFICE && t.to == Place.HOME -> "Commute home"
+                else -> "${t.from.label} to ${t.to.label.lowercase()}"
+            }
+            if (mode == null) base else "$base by $mode"
         }
-        val by = if (mode == null) "" else " by $mode"
         val length = Duration.ofMillis(t.end - t.start)
+        val rideLines = rides.joinToString("") { r ->
+            "\nShuttle: ${clock(r.start)} – ${clock(r.end)} (${EventFormatter.dur(Duration.ofMillis(r.end - r.start))})"
+        }
         val driveLines = legs.joinToString("") { d ->
             "\nDrive: ${clock(d.start)} – ${clock(d.end)} (${EventFormatter.dur(Duration.ofMillis(d.end - d.start))}, ${d.device})"
         }
@@ -161,9 +195,37 @@ object PlacesEngine {
             calendarId = cal,
             startMs = t.start,
             endMs = t.end,
-            title = EventFormatter.spanTitle("$base$by", length, Instant.ofEpochMilli(t.start), Instant.ofEpochMilli(t.end)),
+            title = EventFormatter.spanTitle(title, length, Instant.ofEpochMilli(t.start), Instant.ofEpochMilli(t.end)),
             description = "Left ${t.from.label.lowercase()} ${clock(t.start)}, " +
-                "arrived ${t.to.label.lowercase()} ${clock(t.end)}$driveLines\n\n${EventFormatter.TAG_PREFIX}$tag]",
+                "arrived ${t.to.label.lowercase()} ${clock(t.end)}$rideLines$driveLines\n\n${EventFormatter.TAG_PREFIX}$tag]",
+        )
+    }
+
+    /** Time on the shuttle, from joining its Wi-Fi to leaving it: "Commute home by shuttle". */
+    private fun ride(cal: Long, r: ShuttleRide, trip: Trip?): DesiredEvent {
+        val tag = "${TAG_ROOT}ride:${r.id}"
+        val title = when {
+            trip != null && trip.from == Place.HOME && trip.to == Place.OFFICE -> "Commute to work by shuttle"
+            trip != null && trip.from == Place.OFFICE && trip.to == Place.HOME -> "Commute home by shuttle"
+            else -> "Shuttle ride"
+        }
+        val whole = if (trip == null) {
+            ""
+        } else {
+            "\nWhole trip: left ${trip.from.label.lowercase()} ${clock(trip.start)}, arrived " +
+                "${trip.to.label.lowercase()} ${clock(trip.end)} " +
+                "(${EventFormatter.dur(Duration.ofMillis(trip.end - trip.start))})"
+        }
+        return DesiredEvent(
+            tag = tag,
+            calendarId = cal,
+            startMs = r.start,
+            endMs = r.end,
+            title = EventFormatter.spanTitle(
+                title, Duration.ofMillis(r.end - r.start), Instant.ofEpochMilli(r.start), Instant.ofEpochMilli(r.end),
+            ),
+            description = "On shuttle Wi-Fi \"${r.network}\" from ${clock(r.start)} to ${clock(r.end)}" +
+                "$whole\n\n${EventFormatter.TAG_PREFIX}$tag]",
         )
     }
 
