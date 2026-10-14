@@ -5,7 +5,11 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-enum class SignalType { ARRIVE, LEAVE, CAR_ON, CAR_OFF, SHUTTLE }
+/**
+ * SHUTTLE is the phone joining the shuttle Wi-Fi; SHUTTLE_OFF is the phone
+ * no longer being on it, which ends the ride.
+ */
+enum class SignalType { ARRIVE, LEAVE, CAR_ON, CAR_OFF, SHUTTLE, SHUTTLE_OFF }
 
 /** One raw observation: "geofence said I left home at 8:05", "car connected at 8:07". */
 data class Signal(
@@ -62,6 +66,12 @@ class SignalLog private constructor(context: Context) :
             .use { c -> c.moveToFirst() }
     }
 
+    /** The most recent signal of any of [types]. */
+    fun lastOfTypes(vararg types: SignalType): Signal? {
+        val marks = types.joinToString(",") { "?" }
+        return query("type IN ($marks)", types.map { it.name }.toTypedArray(), "ts DESC, id DESC", "1").firstOrNull()
+    }
+
     /** The most recent arrive / leave signal for a place, from any source. */
     fun lastForPlace(place: String): Signal? =
         query("place = ?", arrayOf(place), "ts DESC, id DESC", "1").firstOrNull()
@@ -106,8 +116,15 @@ object Signals {
 
     fun record(context: Context, ts: Long, type: SignalType, place: String?, source: String, detail: String) {
         val log = SignalLog.get(context)
-        // Wi-Fi can report the same network repeatedly; one entry per 20 minutes is enough.
-        if (source == "wifi") {
+        if (type == SignalType.SHUTTLE || type == SignalType.SHUTTLE_OFF) {
+            // Shuttle on/off alternate. A repeat of the last one within 20 minutes adds
+            // nothing, and "off" only means something while a ride is open.
+            val last = log.lastOfTypes(SignalType.SHUTTLE, SignalType.SHUTTLE_OFF)
+            val repeat = last != null && last.type == type && ts - last.ts < WIFI_DEDUPE_MS
+            val offWithoutRide = type == SignalType.SHUTTLE_OFF && last?.type != SignalType.SHUTTLE
+            if (repeat || offWithoutRide) return
+        } else if (source == "wifi") {
+            // Wi-Fi can report the same network repeatedly; one entry per 20 minutes is enough.
             val repeat = if (place != null) {
                 // Only a repeat if nothing happened since: an exit in between makes this a real return.
                 val last = log.lastForPlace(place)

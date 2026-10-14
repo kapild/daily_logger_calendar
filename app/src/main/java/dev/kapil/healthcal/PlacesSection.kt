@@ -168,7 +168,8 @@ fun PlacesSection(resumeTick: Int, calGranted: Boolean, calendars: List<Calendar
         HorizontalDivider()
         Text("Shuttle", style = MaterialTheme.typography.titleSmall)
         Text(
-            "When your phone joins the shuttle Wi-Fi, that commute is labeled as a shuttle ride. " +
+            "The time your phone is on the shuttle Wi-Fi becomes a shuttle commute event, " +
+                "and the whole trip from door to door gets its own event. " +
                 "Join the network once so your phone reconnects to it on its own. " +
                 "A name saved here always counts as the shuttle, even if it's also saved under a place.",
             style = MaterialTheme.typography.bodySmall,
@@ -316,6 +317,7 @@ internal fun signalTitle(s: Signal): String {
         SignalType.CAR_ON -> "Car connected"
         SignalType.CAR_OFF -> "Car disconnected"
         SignalType.SHUTTLE -> "On shuttle Wi-Fi"
+        SignalType.SHUTTLE_OFF -> "Off shuttle Wi-Fi"
     }
 }
 

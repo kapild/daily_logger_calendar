@@ -38,8 +38,12 @@ Turn on **Log places and drives** (step 4 in the app) and you also get:
 | Markers | `Left home | At: 8:00 am`, `Arrived office | At: 9:00 am`, `Left office`, `Arrived home` |
 | Work | `At work | Dur: 8 hours 30 mins | Start: 9:00 am End: 5:30 pm` |
 | Gym | `Gym | Dur: 55 mins | Start: ... End: ...` (visits under 10 minutes are ignored as drive-bys) |
-| Commute | `Commute to work by shuttle | Dur: 1 hour | Start: 8:00 am End: 9:00 am` |
-| Drive | `Drive | Dur: 23 mins | Start: ... End: ...` for car trips that aren't part of a commute |
+| Commute by car | `Commute to work by car | Dur: 45 mins | Start: 8:00 am End: 8:45 am` |
+| Commute by shuttle | `Commute home by shuttle | Dur: 38 mins | Start: 4:58 pm End: 5:36 pm`: the time your phone was on the shuttle Wi-Fi |
+| Door to door, by shuttle | `Work to home via shuttle and car | Dur: 1 hour 56 mins | Start: 4:55 pm End: 6:51 pm`: left one place to arrived at the other, including any stops |
+
+A shuttle trip gives overlapping events: door to door, the shuttle ride, and a separate `Drive` for any car leg to or from the stop. A car-only commute stays one event.
+| Drive | `Drive | Dur: 23 mins | Start: ... End: ...` for car trips that aren't a car commute (including the drive to or from the shuttle stop) |
 
 Changing the title format doesn't create duplicates: the next sync or Backfill renames existing events in place.
 
@@ -47,7 +51,7 @@ Changing the title format doesn't create duplicates: the next sync or Backfill r
 
 - **Home, office, gym:** a geofence and/or the place's Wi-Fi. Geofences give exact leave times; Wi-Fi gives fast arrivals. Set both when you can. For a Wi-Fi-only place, leaving is inferred when your car connects or you join the shuttle Wi-Fi.
 - **Car:** check your car's Bluetooth. Connect = drive start, disconnect = drive end.
-- **Shuttle:** add the shuttle Wi-Fi name. Any commute where the phone joined it is labeled "by shuttle". Your phone must have joined that network before.
+- **Shuttle:** add the shuttle Wi-Fi name. Your phone must have joined that network before. The ride starts when the phone joins it and ends at the first sign you got off: your car connecting, the phone joining another Wi-Fi, or a check every 3 minutes (run only while you are on the shuttle) finding the phone off the shuttle Wi-Fi. A drop of up to 10 minutes counts as the same ride.
 
 Leaving and coming back within 10 minutes counts as never having left, so GPS jitter doesn't create junk events. New signals show up in the calendar within about 2 minutes (11 minutes for a "left" event, to rule out a quick return). The **Recent signals** list in the app shows exactly what was logged, which helps when tuning radius or Wi-Fi names.
 

@@ -24,11 +24,25 @@ internal data class Trip(val from: Place, val to: Place, val start: Long, val en
 
 internal data class Drive(val start: Long, val end: Long, val id: Long, val device: String)
 
+/**
+ * Time on the shuttle: from joining its Wi-Fi to the first sign you got off,
+ * which is leaving the Wi-Fi or your car connecting ([endSource] "wifi" or
+ * "bluetooth").
+ */
+internal data class ShuttleRide(
+    val start: Long,
+    val end: Long,
+    val id: Long,
+    val network: String,
+    val endSource: String = "wifi",
+)
+
 internal class Timeline(
     val visits: List<Visit>,
     val trips: List<Trip>,
     val drives: List<Drive>,
     val shuttleTimes: List<Long>,
+    val rides: List<ShuttleRide> = emptyList(),
 )
 
 /**
@@ -47,6 +61,9 @@ internal class Timeline(
  *  - If an exit was never seen, the stay ends when the car or shuttle was
  *    detected. With no such hint, no "left" time is invented.
  *
+ * Shuttle rides are tracked alongside: a ride runs from joining the shuttle
+ * Wi-Fi to leaving it, and a drop of up to 10 minutes is the same ride.
+ *
  * This file has no Android imports so the rules can be tested on their own.
  */
 internal object PlaceTimeline {
@@ -56,11 +73,16 @@ internal object PlaceTimeline {
     const val MIN_DRIVE_MS = 2 * MIN
     const val MAX_DRIVE_MS = 300 * MIN
     const val MIN_STAY_MS = 10 * MIN       // shorter visits are drive-bys
+    const val RIDE_GAP_MS = 10 * MIN       // shuttle Wi-Fi back within this = the same ride
+    const val MIN_RIDE_MS = 2 * MIN
+    const val MAX_RIDE_MS = 180 * MIN
 
     fun build(signals: List<Signal>, geofenced: Set<Place>): Timeline {
         val visits = ArrayList<Visit>()
         val drives = ArrayList<Drive>()
         val shuttleTimes = ArrayList<Long>()
+        val rides = ArrayList<ShuttleRide>()
+        var rideOpen: ShuttleRide? = null // start, id and network of the ride in progress; end unused
 
         var current: Visit? = null  // where you are now
         var last: Visit? = null     // the place you most recently left, while on the way somewhere
@@ -170,7 +192,27 @@ internal object PlaceTimeline {
 
                 SignalType.SHUTTLE -> {
                     shuttleTimes += s.ts
+                    if (rideOpen == null) {
+                        val prev = rides.lastOrNull()
+                        rideOpen = if (prev != null && s.ts - prev.end <= RIDE_GAP_MS) {
+                            // The Wi-Fi dropped briefly; it's the same ride.
+                            rides.removeAt(rides.lastIndex)
+                            prev
+                        } else {
+                            ShuttleRide(s.ts, s.ts, s.id, s.detail)
+                        }
+                    }
                     moving(s, "shuttle")
+                }
+
+                SignalType.SHUTTLE_OFF -> {
+                    val open = rideOpen
+                    if (open != null) {
+                        if (s.ts - open.start in MIN_RIDE_MS..MAX_RIDE_MS) {
+                            rides += open.copy(end = s.ts, endSource = s.source)
+                        }
+                        rideOpen = null
+                    }
                 }
             }
         }
@@ -197,6 +239,7 @@ internal object PlaceTimeline {
             }
         }
 
-        return Timeline(kept, trips, drives, shuttleTimes)
+        // A ride still open (no "off" seen yet) is left out until it ends.
+        return Timeline(kept, trips, drives, shuttleTimes, rides)
     }
 }
