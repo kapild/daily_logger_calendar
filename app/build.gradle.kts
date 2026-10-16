@@ -47,6 +47,10 @@ dependencies {
 
     implementation("androidx.work:work-runtime-ktx:2.10.1")
 
+    // Home-screen widget
+    implementation("androidx.glance:glance-appwidget:1.1.1")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
     // Geofences + current location for places (runs inside Play Services, low power)
     implementation("com.google.android.gms:play-services-location:21.3.0")
 

@@ -220,6 +220,11 @@ fun SetupTab(resumeTick: Int) {
         calGranted = hasCalendarPermission(ctx)
     }
 
+    // Access changed (or first load): redraw the home-screen widget so it stops saying "No access".
+    LaunchedEffect(granted) {
+        if (granted.isNotEmpty()) runCatching { refreshHealthWidgets(ctx) }
+    }
+
     LaunchedEffect(calGranted, resumeTick) {
         if (calGranted) {
             calendars = withContext(Dispatchers.IO) { CalendarRepo.listWritableCalendars(ctx) }
@@ -252,6 +257,8 @@ fun SetupTab(resumeTick: Int) {
                 PermissionLine("Exercise", HealthReader.EXERCISE in granted)
                 PermissionLine("Sync in the background", HealthReader.BACKGROUND in granted)
                 PermissionLine("Data older than 30 days", HealthReader.HISTORY in granted)
+                PermissionLine("Steps (widget)", HealthReader.STEPS in granted)
+                PermissionLine("Calories (widget)", HealthReader.CALORIES in granted)
                 if (!granted.containsAll(HealthReader.ALL_PERMISSIONS)) {
                     Button(onClick = { hcLauncher.launch(HealthReader.ALL_PERMISSIONS) }) {
                         Text("Grant Health Connect access")
