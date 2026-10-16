@@ -79,6 +79,23 @@ Place history only exists from the day you turn this on; Health Connect data can
 Also check that Google Health is writing to Health Connect:
 **Settings → Security & privacy → Privacy controls → Health Connect → App permissions → Google Health** → allow Sleep and Exercise (write).
 
+## Home-screen widget
+
+**Health this week** shows the last 7 days of sleep, workouts, steps and
+calories, in dark colours. It reads Health Connect directly, so it does not
+wait for the calendar to sync.
+
+- **Small (the default 4 x 3):** one metric at a time. Tap a tab to switch
+  between Sleep, Workouts, Steps and Calories.
+- **Tall:** stretch it to about 4 x 5 and all four show as rows.
+- **Tap a bar** to see that day's numbers; tap ↻ to re-read Health Connect;
+  tap the big number to open HealthCal.
+
+To add it: long-press the home screen, **Widgets**, **HealthCal**. Steps and
+calories need two extra Health Connect permissions: open HealthCal and tap
+**Grant Health Connect access** once after updating. The widget refreshes
+after every sync, every 30 minutes, and when you tap ↻.
+
 ## How sync and repair work
 
 Every run is a reconcile, not a blind export:
@@ -122,7 +139,7 @@ If sleep shows up but workouts don't, check Setup: the workout picker may point 
 
 | File | Job |
 |---|---|
-| `HealthReader.kt` | Reads sleep + exercise sessions from Health Connect |
+| `HealthReader.kt` | Reads sleep + exercise sessions, and daily steps + calories, from Health Connect |
 | `EventFormatter.kt` | Builds title/notes (deep segments, stage totals, workout type) |
 | `CalendarRepo.kt` | Lists calendars; finds/inserts/updates/deletes tagged events |
 | `SyncEngine.kt` | The reconcile logic above |
@@ -140,3 +157,6 @@ If sleep shows up but workouts don't, check Setup: the workout picker may point 
 | `EventsTab.kt` | The Events tab and calendar upload checks |
 | `ScanReport.kt` | Saves the last scan for the Found tab |
 | `Theme.kt` | Cool color palette, per-kind colors, shared row and label styles |
+| `WidgetWeek.kt` | Builds the widget's 7-day week and all its wording (unit-tested) |
+| `WidgetData.kt` | Reads the week from Health Connect and caches it for quick taps |
+| `HealthWidget.kt` | The home-screen widget: tabbed when small, rows when tall |

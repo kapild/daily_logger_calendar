@@ -51,6 +51,15 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
             SignalLog.get(ctx).pruneOlderThan(now.minus(Duration.ofDays(400)).toEpochMilli())
 
             prefs.lastRunAt = System.currentTimeMillis()
+
+            // Redraw the home-screen widget with fresh Health Connect numbers.
+            try {
+                refreshHealthWidgets(ctx)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // The widget is optional; never fail a sync over it.
+            }
         } finally {
             prefs.runningSince = 0L
         }

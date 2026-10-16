@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="health_widget_description">Sleep, workouts, steps and calories for the last 7 days. Make it taller to see all four at once.</string>
+</resources>

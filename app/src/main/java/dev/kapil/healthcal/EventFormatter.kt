@@ -239,5 +239,5 @@ object EventFormatter {
         ExerciseSessionRecord.EXERCISE_TYPE_YOGA to "Yoga",
     )
 
-    private fun exerciseName(type: Int): String = EXERCISE_NAMES[type] ?: "Workout"
+    internal fun exerciseName(type: Int): String = EXERCISE_NAMES[type] ?: "Workout"
 }
