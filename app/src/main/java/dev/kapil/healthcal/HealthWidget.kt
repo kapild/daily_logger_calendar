@@ -156,7 +156,7 @@ private fun Content(week: Week?, metric: Metric, daysAgo: Int) {
         Column(card.clickable(actionStartActivity<MainActivity>()), verticalAlignment = Alignment.CenterVertically) {
             Text("Health this week", style = style(Palette.text, 16.sp, bold = true))
             Spacer(GlanceModifier.height(6.dp))
-            Text("Open HealthCal and allow Health Connect access.", style = style(Palette.muted, 13.sp))
+            Text("Open Daily Logger and allow Health Connect access.", style = style(Palette.muted, 13.sp))
         }
         return
     }

@@ -113,12 +113,12 @@ object WidgetText {
             } ?: "$day · no sleep logged"
             Metric.WORKOUTS -> w.workoutNames[i].takeIf { it.isNotEmpty() }?.let { "$day · $it" } ?: day
             Metric.STEPS -> when {
-                w.steps == null -> "Allow steps in HealthCal"
+                w.steps == null -> "Allow steps in Daily Logger"
                 i == w.todayIndex -> "$day · so far"
                 else -> day
             }
             Metric.CALORIES -> when {
-                w.calories == null -> "Allow calories in HealthCal"
+                w.calories == null -> "Allow calories in Daily Logger"
                 i == w.todayIndex -> "$day · so far"
                 else -> day
             }

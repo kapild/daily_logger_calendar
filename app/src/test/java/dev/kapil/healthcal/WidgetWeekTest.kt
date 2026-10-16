@@ -73,7 +73,7 @@ class WidgetWeekTest {
     @Test fun missingPermissionSaysSo() {
         val w = week(steps = null, calories = null)
         assertEquals("—", WidgetText.value(Metric.STEPS, w, 6))
-        assertEquals("Allow steps in HealthCal", WidgetText.detail(Metric.STEPS, w, 6, zone))
+        assertEquals("Allow steps in Daily Logger", WidgetText.detail(Metric.STEPS, w, 6, zone))
         assertEquals("No access", WidgetText.summary(Metric.CALORIES, w))
         assertEquals(0.0, WidgetText.barValue(Metric.STEPS, w, 6), 0.0)
     }

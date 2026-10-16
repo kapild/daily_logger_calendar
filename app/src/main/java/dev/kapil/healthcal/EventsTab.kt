@@ -42,7 +42,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.ZoneId
 
-/** One calendar HealthCal writes to, what it's used for, and how its uploads look. */
+/** One calendar Daily Logger writes to, what it's used for, and how its uploads look. */
 private data class CalendarCard(
     val id: Long,
     val status: CalendarStatus?, // null if the calendar is gone from the phone
@@ -189,7 +189,7 @@ fun EventsTab(resumeTick: Int) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "The exact events HealthCal has written, and whether each one has reached Google. " +
+                        "The exact events Daily Logger has written, and whether each one has reached Google. " +
                             "Tap Remove on any you don't want synced.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -228,7 +228,7 @@ fun EventsTab(resumeTick: Int) {
             item(key = "filter") { KindFilter(filter, counts) { filter = it } }
         } else if (!loading && cards.isNotEmpty()) {
             item(key = "no-events") {
-                Notice("No HealthCal events in these calendars yet. Run a sync from the Found tab.", Tone.NEUTRAL)
+                Notice("No Daily Logger events in these calendars yet. Run a sync from the Found tab.", Tone.NEUTRAL)
             }
         }
 
@@ -377,7 +377,7 @@ private fun diagnose(c: CalendarCard): Diagnosis {
         Tone.WAIT,
         canSyncNow = true,
     )
-    if (c.total == 0) return Diagnosis("No HealthCal events here yet.", Tone.NEUTRAL, canSyncNow = true)
+    if (c.total == 0) return Diagnosis("No Daily Logger events here yet.", Tone.NEUTRAL, canSyncNow = true)
     if (!c.uploadKnown) return Diagnosis(
         "${c.total} events are in this calendar on the phone. This phone doesn't report upload status.",
         Tone.NEUTRAL,

@@ -3,7 +3,7 @@ package dev.kapil.healthcal
 import android.content.Context
 
 /**
- * The places HealthCal knows about.
+ * The places Daily Logger knows about.
  * [markers]   -> write "Arrived ..." / "Left ..." events
  * [spanTitle] -> write one event covering the whole stay
  */
