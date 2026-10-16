@@ -84,7 +84,8 @@ private val P_DAYS_AGO = ActionParameters.Key<Int>("days_ago")
  * all four as rows. Tap a tab to switch metric and a day to see its values.
  */
 class HealthWidget : GlanceAppWidget() {
-    override val sizeMode = SizeMode.Responsive(setOf(SMALL, TALL))
+    // Exact, not Responsive: the bars are sized from the widget's real height.
+    override val sizeMode = SizeMode.Exact
     override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -160,14 +161,15 @@ private fun Content(week: Week?, metric: Metric, daysAgo: Int) {
         return
     }
     val day = (week.todayIndex - daysAgo).coerceIn(0, week.todayIndex)
-    val tall = LocalSize.current.height >= HealthWidget.TALL.height
+    val height = LocalSize.current.height.value
+    val tall = height >= HealthWidget.TALL.height.value
     Column(card) {
-        if (tall) Rows(week, day) else Tabbed(week, metric, day)
+        if (tall) Rows(week, day, rowBarHeight(height)) else Tabbed(week, metric, day, tabBarHeight(height))
     }
 }
 
 @Composable
-private fun ColumnScope.Tabbed(week: Week, metric: Metric, day: Int) {
+private fun ColumnScope.Tabbed(week: Week, metric: Metric, day: Int, barHeight: Dp) {
     val zone = ZoneId.systemDefault()
     val accent = Palette.accent(metric)
     Row(GlanceModifier.fillMaxWidth()) {
@@ -200,7 +202,7 @@ private fun ColumnScope.Tabbed(week: Week, metric: Metric, day: Int) {
     )
     Text(WidgetText.detail(metric, week, day, zone), style = style(Palette.muted, 12.sp), maxLines = 1)
     Spacer(GlanceModifier.defaultWeight())
-    Bars(week, metric, day, barHeight = 34.dp, letters = true)
+    Bars(week, metric, day, barHeight = barHeight, letters = true)
     Spacer(GlanceModifier.height(4.dp))
     Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
@@ -214,7 +216,7 @@ private fun ColumnScope.Tabbed(week: Week, metric: Metric, day: Int) {
 }
 
 @Composable
-private fun ColumnScope.Rows(week: Week, day: Int) {
+private fun ColumnScope.Rows(week: Week, day: Int, barHeight: Dp) {
     val zone = ZoneId.systemDefault()
     Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text("This week", style = style(Palette.text, 15.sp, bold = true), modifier = GlanceModifier.defaultWeight())
@@ -239,13 +241,24 @@ private fun ColumnScope.Rows(week: Week, day: Int) {
             Text(WidgetText.value(m, week, day), style = style(Palette.text, 13.sp, bold = true), maxLines = 1)
         }
         Spacer(GlanceModifier.height(3.dp))
-        Bars(week, m, day, barHeight = 22.dp, letters = m == Metric.CALORIES)
+        Bars(week, m, day, barHeight = barHeight, letters = m == Metric.CALORIES)
         }
     }
     // The detail line for sleep is the one people ask about; keep it visible here too.
     Spacer(GlanceModifier.height(4.dp))
     Text(WidgetText.detail(Metric.SLEEP, week, day, zone), style = style(Palette.muted, 11.sp), maxLines = 1)
 }
+
+/*
+ * Bar heights: whatever height is left after the text. The fixed parts are
+ * estimates with some slack, so larger system font sizes still fit.
+ */
+
+/** Tabs, big value, detail, day letters and summary take about 160dp. */
+private fun tabBarHeight(widgetHeight: Float): Dp = (widgetHeight - 160f).coerceIn(34f, 160f).dp
+
+/** Header, four label lines, day letters and the detail line take about 200dp; the rest is split four ways. */
+private fun rowBarHeight(widgetHeight: Float): Dp = ((widgetHeight - 200f) / 4f).coerceIn(22f, 90f).dp
 
 /** Seven bars, oldest first. The selected day is full colour; tapping a bar selects its day. */
 @Composable
