@@ -1,4 +1,6 @@
-# HealthCal
+# Daily Logger
+
+_Formerly HealthCal. The package name is still `dev.kapil.healthcal`, so installing over the old app keeps its permissions, settings and calendar events._
 
 A tiny personal Android app that copies **sleep** and **workouts** from Health Connect (where Google Health / Pixel Watch data lands) into any calendar on your phone. Everything runs on-device; events reach Google Calendar through normal account sync.
 
@@ -62,7 +64,7 @@ Place history only exists from the day you turn this on; Health Connect data can
 ## Build and install (about 10 minutes)
 
 1. Install Android Studio (latest stable).
-2. **File → Open** this `HealthCal` folder. Let Gradle sync. If Studio offers to upgrade AGP/Kotlin/dependencies, accept.
+2. **File → Open** this project folder. Let Gradle sync. If Studio offers to upgrade AGP/Kotlin/dependencies, accept.
    - If `connect-client:1.1.0` doesn't resolve, change it in `app/build.gradle.kts` to the newest 1.1.x.
 3. On your Fold: **Settings → About phone → tap Build number 7×**, then **Developer options → Wireless debugging** on.
 4. In Studio, pair the phone (Device Manager → Pair using Wi-Fi), pick it, press **Run ▶**.
@@ -89,10 +91,10 @@ wait for the calendar to sync.
   between Sleep, Workouts, Steps and Calories.
 - **Tall:** stretch it to about 4 x 5 and all four show as rows.
 - **Tap a bar** to see that day's numbers; tap ↻ to re-read Health Connect;
-  tap the big number to open HealthCal.
+  tap the big number to open Daily Logger.
 
-To add it: long-press the home screen, **Widgets**, **HealthCal**. Steps and
-calories need two extra Health Connect permissions: open HealthCal and tap
+To add it: long-press the home screen, **Widgets**, **Daily Logger**. Steps and
+calories need two extra Health Connect permissions: open Daily Logger and tap
 **Grant Health Connect access** once after updating. The widget refreshes
 after every sync, every 30 minutes, and when you tap ↻.
 

@@ -13,7 +13,7 @@ import java.time.ZoneId
  * which can lag behind) and keeps the last result so taps redraw instantly.
  */
 object WidgetData {
-    private const val TAG = "HealthCalWidget"
+    private const val TAG = "DailyLoggerWidget"
     private const val PREFS = "health_widget"
     private const val KEY_WEEK = "week"
     private const val FRESH_MS = 15 * 60_000L

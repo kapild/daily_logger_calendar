@@ -191,7 +191,7 @@ private fun ScanResult.tone(): Tone = when (this) {
 }
 
 private fun scanSummary(report: ScanReport?, signalCount: Int): String {
-    if (report == null) return "Every sleep session, workout and place signal HealthCal finds shows up here."
+    if (report == null) return "Every sleep session, workout and place signal Daily Logger finds shows up here."
     val sleep = report.items.count { it.kind == Kind.SLEEP }
     val workouts = report.items.count { it.kind == Kind.WORKOUT }
     val ran = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(report.ranAt))

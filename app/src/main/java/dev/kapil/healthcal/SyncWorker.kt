@@ -72,7 +72,7 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
     } catch (e: CancellationException) {
         throw e
     } catch (e: SecurityException) {
-        "Missing permission. Open HealthCal and grant the access it asks for.\n(${e.message})"
+        "Missing permission. Open Daily Logger and grant the access it asks for.\n(${e.message})"
     } catch (e: Exception) {
         "Failed: ${e.javaClass.simpleName}: ${e.message}"
     }

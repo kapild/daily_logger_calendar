@@ -131,7 +131,7 @@ private fun Header(selected: Int, onSelect: (Int) -> Unit) {
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)),
     ) {
         Text(
-            "HealthCal",
+            "Daily Logger",
             style = MaterialTheme.typography.headlineSmall,
             color = colors.content,
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp),
@@ -251,7 +251,7 @@ fun SetupTab(resumeTick: Int) {
     ) {
         Section("1. Health Connect access") {
             if (hcStatus != HealthConnectClient.SDK_AVAILABLE) {
-                Text("Health Connect isn't available on this phone (status $hcStatus). Update it from the Play Store, then reopen HealthCal.")
+                Text("Health Connect isn't available on this phone (status $hcStatus). Update it from the Play Store, then reopen Daily Logger.")
             } else {
                 PermissionLine("Sleep", HealthReader.SLEEP in granted)
                 PermissionLine("Exercise", HealthReader.EXERCISE in granted)

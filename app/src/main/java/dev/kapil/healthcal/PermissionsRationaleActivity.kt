@@ -28,9 +28,9 @@ class PermissionsRationaleActivity : ComponentActivity() {
                             .padding(24.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        Text("How HealthCal uses your data", style = MaterialTheme.typography.headlineSmall)
+                        Text("How Daily Logger uses your data", style = MaterialTheme.typography.headlineSmall)
                         Text(
-                            "HealthCal reads sleep sessions (including stages) and exercise sessions " +
+                            "Daily Logger reads sleep sessions (including stages) and exercise sessions " +
                                 "from Health Connect on this phone, and writes them as events into the " +
                                 "calendars you pick. Nothing leaves your phone except through your own " +
                                 "calendar sync. There are no servers and no analytics."
