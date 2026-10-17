@@ -61,9 +61,11 @@ Leaving and coming back within 10 minutes counts as never having left, so GPS ji
 
 ### Washer and dryer (LG ThinQ)
 
-With notification access allowed (the **Allow notification access** button under places), each cycle becomes
-`Washer | Dur: 52 mins | Start: 2:54 pm End: 3:46 pm` (or `Dryer | ...`) in the places calendar. The start is
-ThinQ's "Washing started." notification and the end is "Washing done" or "The cycle has finished". Repeated
+With notification access allowed (the **Allow notification access** button under places), a
+`Washer running | At: 2:54 pm` event appears in the places calendar as soon as ThinQ says "Washing started.",
+blocked out for your usual cycle length (an hour until a few loads have finished). When "Washing done" or "The
+cycle has finished" arrives, the same event becomes `Washer | Dur: 52 mins | Start: 2:54 pm End: 3:46 pm`
+(or `Dryer | ...`). Repeated
 notifications count once, a "problem with the washer" notification is noted in the event, and "laundry has not
 been removed" reminders are ignored. Turn on ThinQ's start and finish notifications for each appliance. Only LG
 ThinQ's notifications are read; every other app's are ignored. If a start never gets a finish within 5 hours, a

@@ -89,11 +89,26 @@ object Laundry {
         return out.sortedBy { it.start }
     }
 
-    /** Calendar events: "Washer | Dur: 52 mins | Start: ... End: ..." for each finished cycle. */
+    /** Used for a running cycle's expected length until a few cycles have finished. */
+    val DEFAULT_CYCLE_MS: Long = Duration.ofHours(1).toMillis()
+
+    /** Expected length of a cycle: the median of this appliance's finished cycles, or [DEFAULT_CYCLE_MS]. */
+    fun expectedLength(all: List<Cycle>, appliance: String): Long {
+        val done = all.filter { it.appliance == appliance && it.end != null }.map { it.end!! - it.start }.sorted()
+        return if (done.isEmpty()) DEFAULT_CYCLE_MS else done[done.size / 2]
+    }
+
+    /**
+     * Calendar events, all under one tag per cycle so each is updated in place:
+     *  - as soon as it starts: "Washer running | At: 2:54 pm", blocked out for the expected length
+     *  - once finished: "Washer | Dur: 52 mins | Start: ... End: ..."
+     *  - no finish within 5 hours: "Washer started | At: 2:54 pm"
+     */
     fun events(signals: List<Signal>, now: Long, calendarId: Long, zone: ZoneId = ZoneId.systemDefault()): List<DesiredEvent> {
         val clock = DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault())
         fun time(ms: Long) = clock.format(Instant.ofEpochMilli(ms).atZone(zone))
-        return cycles(signals).mapNotNull { c ->
+        val all = cycles(signals)
+        return all.map { c ->
             val tag = "${PlacesEngine.TAG_ROOT}laundry:${c.id}"
             val problems = c.problems.joinToString("") { "\nThinQ reported a problem at ${time(it)}" }
             val end = c.end
@@ -121,7 +136,17 @@ object Laundry {
                         "From LG ThinQ notifications\n\n${EventFormatter.TAG_PREFIX}$tag]",
                 )
             } else {
-                null // still running
+                val expected = expectedLength(all, c.appliance)
+                DesiredEvent(
+                    tag = tag,
+                    calendarId = calendarId,
+                    startMs = c.start,
+                    endMs = c.start + expected,
+                    title = EventFormatter.markerTitle("${c.appliance} running", Instant.ofEpochMilli(c.start)),
+                    description = "${c.appliance} started ${time(c.start)}. Shown until about ${time(c.start + expected)}, " +
+                        "the usual length; it updates when the cycle finishes.$problems\n" +
+                        "From LG ThinQ notifications\n\n${EventFormatter.TAG_PREFIX}$tag]",
+                )
             }
         }
     }

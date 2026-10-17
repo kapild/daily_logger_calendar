@@ -66,9 +66,31 @@ class LaundryTest {
         assertTrue(events[0].description.contains("problem"))
     }
 
-    @Test fun aRunningCycleHasNoEventYet() {
-        val signals = listOf(sig(at(14, 54), SignalType.APPLIANCE_ON))
-        assertTrue(Laundry.events(signals, now = at(15, 30), calendarId = 7, zone = zone).isEmpty())
+    @Test fun aRunningCycleShowsAtOnceForTheUsualLength() {
+        // Two earlier loads took 40 and 50 minutes; today's has just started.
+        val signals = listOf(
+            sig(at(8, 0), SignalType.APPLIANCE_ON),
+            sig(at(8, 40), SignalType.APPLIANCE_OFF),
+            sig(at(10, 0), SignalType.APPLIANCE_ON),
+            sig(at(10, 50), SignalType.APPLIANCE_OFF),
+            sig(at(14, 54), SignalType.APPLIANCE_ON),
+        )
+        val events = Laundry.events(signals, now = at(14, 55), calendarId = 7, zone = zone)
+        val running = events.last()
+        assertTrue(running.title, running.title.startsWith("Washer running"))
+        assertEquals(at(14, 54), running.startMs)
+        assertEquals(at(15, 44), running.endMs)
+
+        // When it finishes, the same event (same tag) becomes the real cycle.
+        val done = Laundry.events(signals + sig(at(15, 10), SignalType.APPLIANCE_OFF), now = at(15, 11), calendarId = 7, zone = zone).last()
+        assertEquals(running.tag, done.tag)
+        assertEquals(at(15, 10), done.endMs)
+        assertTrue(done.title, done.title.startsWith("Washer | Dur:"))
+    }
+
+    @Test fun firstEverCycleAssumesAnHour() {
+        val running = Laundry.events(listOf(sig(at(14, 54), SignalType.APPLIANCE_ON)), now = at(14, 55), calendarId = 7, zone = zone).single()
+        assertEquals(at(15, 54), running.endMs)
     }
 
     @Test fun aStartWithNoEndIsNotedAfterFiveHours() {
