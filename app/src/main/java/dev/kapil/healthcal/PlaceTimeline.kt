@@ -205,6 +205,9 @@ internal object PlaceTimeline {
                     moving(s, "shuttle")
                 }
 
+                // Washer and dryer cycles are handled by Laundry.
+                SignalType.APPLIANCE_ON, SignalType.APPLIANCE_OFF, SignalType.APPLIANCE_PROBLEM -> Unit
+
                 SignalType.SHUTTLE_OFF -> {
                     val open = rideOpen
                     if (open != null) {

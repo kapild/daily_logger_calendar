@@ -56,7 +56,8 @@ object PlacesEngine {
             }
         }
         val geofenced = Place.entries.filter { config.location(it) != null }.toSet()
-        val desired = build(PlaceTimeline.build(signals, geofenced), now, calendarId)
+        val desired = build(PlaceTimeline.build(signals, geofenced), now, calendarId) +
+            Laundry.events(signals, now, calendarId)
 
         val c = CalendarReconciler.apply(
             context = context,

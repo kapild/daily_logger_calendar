@@ -49,6 +49,7 @@ fun PlacesSection(resumeTick: Int, calGranted: Boolean, calendars: List<Calendar
     var fine by remember { mutableStateOf(PlaceMonitor.hasFineLocation(ctx)) }
     var background by remember { mutableStateOf(PlaceMonitor.hasBackgroundLocation(ctx)) }
     var bluetooth by remember { mutableStateOf(PlaceMonitor.hasBluetooth(ctx)) }
+    var thinq by remember { mutableStateOf(ThinQListener.isAllowed(ctx)) }
     var carDevices by remember { mutableStateOf(config.carDevices) }
     var shuttle by remember { mutableStateOf(config.shuttleSsids) }
     var bonded by remember { mutableStateOf(emptyList<Pair<String, String>>()) }
@@ -69,6 +70,7 @@ fun PlacesSection(resumeTick: Int, calGranted: Boolean, calendars: List<Calendar
         fine = PlaceMonitor.hasFineLocation(ctx)
         background = PlaceMonitor.hasBackgroundLocation(ctx)
         bluetooth = PlaceMonitor.hasBluetooth(ctx)
+        thinq = ThinQListener.isAllowed(ctx)
         if (bluetooth) bonded = PlaceMonitor.bondedDevices(ctx)
         if (config.enabled) PlaceMonitor.registerAll(ctx)
     }
@@ -116,6 +118,7 @@ fun PlacesSection(resumeTick: Int, calGranted: Boolean, calendars: List<Calendar
         PermissionLine("Precise location", fine)
         PermissionLine("Location all the time", background)
         PermissionLine("Nearby devices, for car Bluetooth", bluetooth)
+        PermissionLine("Notification access, for LG ThinQ washer and dryer", thinq)
         if (!fine) {
             Button(onClick = {
                 locationLauncher.launch(
@@ -126,6 +129,15 @@ fun PlacesSection(resumeTick: Int, calGranted: Boolean, calendars: List<Calendar
             Button(onClick = { backgroundLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION) }) {
                 Text("Allow location all the time")
             }
+        }
+        if (!thinq) {
+            OutlinedButton(onClick = { ctx.startActivity(ThinQListener.settingsIntent(ctx)) }) {
+                Text("Allow notification access")
+            }
+            Text(
+                "Optional. Only LG ThinQ notifications are read, to log washer and dryer cycles.",
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
         if (!bluetooth && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Button(onClick = { bluetoothLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT) }) {
@@ -318,6 +330,9 @@ internal fun signalTitle(s: Signal): String {
         SignalType.CAR_OFF -> "Car disconnected"
         SignalType.SHUTTLE -> "On shuttle Wi-Fi"
         SignalType.SHUTTLE_OFF -> "Off shuttle Wi-Fi"
+        SignalType.APPLIANCE_ON -> "${s.detail} started"
+        SignalType.APPLIANCE_OFF -> "${s.detail} finished"
+        SignalType.APPLIANCE_PROBLEM -> "${s.detail} problem"
     }
 }
 
@@ -325,5 +340,6 @@ internal fun signalTitle(s: Signal): String {
 internal fun signalVia(s: Signal): String = when (s.source) {
     "wifi" -> "Wi-Fi ${s.detail}"
     "bluetooth" -> s.detail
+    Laundry.SOURCE -> "LG ThinQ"
     else -> "location"
 }

@@ -7,9 +7,10 @@ import android.database.sqlite.SQLiteOpenHelper
 
 /**
  * SHUTTLE is the phone joining the shuttle Wi-Fi; SHUTTLE_OFF is the phone
- * no longer being on it, which ends the ride.
+ * no longer being on it, which ends the ride. APPLIANCE_* come from LG ThinQ
+ * notifications (see [Laundry]); their detail is "Washer" or "Dryer".
  */
-enum class SignalType { ARRIVE, LEAVE, CAR_ON, CAR_OFF, SHUTTLE, SHUTTLE_OFF }
+enum class SignalType { ARRIVE, LEAVE, CAR_ON, CAR_OFF, SHUTTLE, SHUTTLE_OFF, APPLIANCE_ON, APPLIANCE_OFF, APPLIANCE_PROBLEM }
 
 /** One raw observation: "geofence said I left home at 8:05", "car connected at 8:07". */
 data class Signal(
@@ -113,10 +114,15 @@ class SignalLog private constructor(context: Context) :
 /** Entry point for receivers: log a signal and schedule a quick calendar update. */
 object Signals {
     private const val WIFI_DEDUPE_MS = 20 * 60_000L
+    private const val APPLIANCE_DEDUPE_MS = 2 * 60_000L
 
     fun record(context: Context, ts: Long, type: SignalType, place: String?, source: String, detail: String) {
         val log = SignalLog.get(context)
-        if (type == SignalType.SHUTTLE || type == SignalType.SHUTTLE_OFF) {
+        if (source == Laundry.SOURCE) {
+            // ThinQ often posts the same message several times in a row.
+            val last = log.lastOfTypes(SignalType.APPLIANCE_ON, SignalType.APPLIANCE_OFF, SignalType.APPLIANCE_PROBLEM)
+            if (last != null && last.type == type && last.detail == detail && ts - last.ts < APPLIANCE_DEDUPE_MS) return
+        } else if (type == SignalType.SHUTTLE || type == SignalType.SHUTTLE_OFF) {
             // Shuttle on/off alternate. A repeat of the last one within 20 minutes adds
             // nothing, and "off" only means something while a ride is open.
             val last = log.lastOfTypes(SignalType.SHUTTLE, SignalType.SHUTTLE_OFF)

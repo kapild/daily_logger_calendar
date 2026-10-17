@@ -59,6 +59,18 @@ Leaving and coming back within 10 minutes counts as never having left, so GPS ji
 
 **Setup:** grant precise location, then **Allow all the time**, then nearby devices. Pick a calendar. For each place, stand there and tap **Set to where I am now** (or add its Wi-Fi). Check your car. Add the shuttle Wi-Fi.
 
+### Washer and dryer (LG ThinQ)
+
+With notification access allowed (the **Allow notification access** button under places), a
+`Washer running | At: 2:54 pm` event appears in the places calendar as soon as ThinQ says "Washing started.",
+blocked out for your usual cycle length (an hour until a few loads have finished). When "Washing done" or "The
+cycle has finished" arrives, the same event becomes `Washer | Dur: 52 mins | Start: 2:54 pm End: 3:46 pm`
+(or `Dryer | ...`). Repeated
+notifications count once, a "problem with the washer" notification is noted in the event, and "laundry has not
+been removed" reminders are ignored. Turn on ThinQ's start and finish notifications for each appliance. Only LG
+ThinQ's notifications are read; every other app's are ignored. If a start never gets a finish within 5 hours, a
+`Washer started | At: ...` marker is written instead.
+
 Place history only exists from the day you turn this on; Health Connect data can be backfilled, location history can't.
 
 ## Build and install (about 10 minutes)
@@ -161,4 +173,6 @@ If sleep shows up but workouts don't, check Setup: the workout picker may point 
 | `Theme.kt` | Cool color palette, per-kind colors, shared row and label styles |
 | `WidgetWeek.kt` | Builds the widget's 7-day week and all its wording (unit-tested) |
 | `WidgetData.kt` | Reads the week from Health Connect and caches it for quick taps |
+| `Laundry.kt` | Turns LG ThinQ notifications into washer and dryer cycles (unit-tested) |
+| `ThinQListener.kt` | Reads LG ThinQ notifications only |
 | `HealthWidget.kt` | The home-screen widget: tabbed when small, rows when tall |

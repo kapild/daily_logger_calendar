@@ -110,6 +110,17 @@
             </intent-filter>
         </receiver>
 
+        <!-- Reads LG ThinQ notifications only, to log washer and dryer cycles -->
+        <service
+            android:name=".ThinQListener"
+            android:label="Daily Logger: washer and dryer"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
         <!-- Home-screen widget: last 7 days from Health Connect -->
         <receiver
             android:name=".HealthWidgetReceiver"
