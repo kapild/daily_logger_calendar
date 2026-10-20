@@ -140,6 +140,12 @@ object Signals {
             }
             if (repeat) return
         }
+        if (place != null) {
+            // Geofences sometimes re-report every place at once; skip what changes nothing.
+            val lastForPlace = log.lastForPlace(place)
+            val lastMovement = log.lastOfTypes(*SignalFilter.movementTypes)
+            if (SignalFilter.isNoOp(Signal(0, ts, type, place, source, detail), lastForPlace, lastMovement)) return
+        }
         log.add(ts, type, place, source, detail)
         Prefs(context).signalsChangedAt = System.currentTimeMillis()
         SyncWorker.schedulePlaces(context, afterLeave = type == SignalType.LEAVE)

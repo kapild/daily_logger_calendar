@@ -73,7 +73,7 @@ fun FoundTab(resumeTick: Int) {
         val r = withContext(Dispatchers.IO) { ScanReportStore.load(ctx) }
         val now = System.currentTimeMillis()
         val from = r?.fromMs ?: (now - SyncWorker.RECENT_DAYS * 86_400_000L)
-        signals = withContext(Dispatchers.IO) { SignalLog.get(ctx).between(from, now) }.reversed()
+        signals = withContext(Dispatchers.IO) { SignalFilter.clean(SignalLog.get(ctx).between(from, now)) }.reversed()
         report = r
         loaded = true
     }
