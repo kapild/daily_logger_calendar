@@ -67,6 +67,7 @@ fun EventsTab(resumeTick: Int) {
 
     var cards by remember { mutableStateOf(emptyList<CalendarCard>()) }
     var events by remember { mutableStateOf(emptyList<OurEvent>()) }
+    var timings by remember { mutableStateOf(emptyMap<String, Timing>()) }
     var removed by remember { mutableStateOf(emptyList<RemovedEvent>()) }
     var askRemove by remember { mutableStateOf<OurEvent?>(null) }
     var loading by remember { mutableStateOf(true) }
@@ -92,6 +93,7 @@ fun EventsTab(resumeTick: Int) {
         loading = true
         val (c, e) = withContext(Dispatchers.IO) { loadCalendarState(ctx) }
         removed = withContext(Dispatchers.IO) { RemovedEvents.all(ctx) }.sortedByDescending { it.startMs }
+        timings = withContext(Dispatchers.IO) { LatencyLog.all(ctx) }
         cards = c
         events = e
         loading = false
@@ -224,6 +226,11 @@ fun EventsTab(resumeTick: Int) {
             )
         }
 
+        val summary = Delay.summarize(timings.values, System.currentTimeMillis() - 7 * 86_400_000L)
+        if (summary != null) {
+            item(key = "delay") { DelayCard(summary, events.firstOrNull { it.tag == summary.slowestTitleTag }?.title) }
+        }
+
         if (events.isNotEmpty()) {
             item(key = "filter") { KindFilter(filter, counts) { filter = it } }
         } else if (!loading && cards.isNotEmpty()) {
@@ -237,6 +244,7 @@ fun EventsTab(resumeTick: Int) {
                 event = e,
                 calendarName = if (cards.size > 1) names[e.calendarId] else null,
                 isLocal = e.calendarId in localIds,
+                timing = timings[e.tag],
                 onRemove = { askRemove = e },
             )
         }
@@ -289,7 +297,7 @@ private fun CalendarCardView(card: CalendarCard, onSyncNow: () -> Unit, onTurnOn
 }
 
 @Composable
-private fun EventItem(event: OurEvent, calendarName: String?, isLocal: Boolean, onRemove: () -> Unit) {
+private fun EventItem(event: OurEvent, calendarName: String?, isLocal: Boolean, timing: Timing?, onRemove: () -> Unit) {
     StripeRow(Kind.ofTag(event.tag)) {
         Text(
             event.title,
@@ -301,6 +309,13 @@ private fun EventItem(event: OurEvent, calendarName: String?, isLocal: Boolean, 
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        if (timing != null) {
+            Text(
+                Delay.line(timing, System.currentTimeMillis(), ::clockText),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 calendarName ?: "",
@@ -412,6 +427,7 @@ private fun loadCalendarState(ctx: Context): Pair<List<CalendarCard>, List<OurEv
 
     val from = prefs.backfillStart.minusDays(2).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
     val to = System.currentTimeMillis() + 86_400_000L
+    UploadWatch.check(ctx) // note anything that reached Google since the last look
     val events = CalendarRepo.listOurEvents(ctx, roles.keys, from, to)
 
     val cards = roles.map { (id, r) ->
@@ -433,4 +449,36 @@ private fun List<String>.joinToNaturalList(): String = when (size) {
     1 -> first()
     2 -> "${this[0]} and ${this[1]}"
     else -> dropLast(1).joinToString(", ") + " and " + last()
+}
+
+private val DELAY_CLOCK: java.time.format.DateTimeFormatter =
+    java.time.format.DateTimeFormatter.ofPattern("h:mm a", java.util.Locale.getDefault())
+
+private fun clockText(ms: Long): String =
+    DELAY_CLOCK.format(java.time.Instant.ofEpochMilli(ms).atZone(ZoneId.systemDefault()))
+
+/** How long new events have been taking to reach Google, over the last 7 days. */
+@Composable
+private fun DelayCard(s: DelaySummary, slowestTitle: String?) {
+    Section("Delay to Google, last 7 days") {
+        val google = s.medianToGoogleMs?.let { " Then a typical ${Delay.text(it)} until the phone uploads it to Google." }
+            ?: " None has been seen reaching Google yet."
+        Text(
+            "${s.count} new events. Typically in your calendar ${Delay.text(s.medianToCalendarMs)} after it happened.$google",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        if (s.slowestTotalMs != null) {
+            Text(
+                "Slowest: ${Delay.text(s.slowestTotalMs)} from happening to Google" +
+                    (slowestTitle?.let { " (${it.substringBefore(" |")})" } ?: "") + ".",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Text(
+            "Google then sends it to your watch and other devices; the phone can't see that last step.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }
