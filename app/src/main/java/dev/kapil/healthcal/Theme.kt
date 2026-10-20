@@ -111,12 +111,14 @@ fun headerColors(): HeaderColors =
 enum class Kind(val label: String) {
     SLEEP("Sleep"),
     WORKOUT("Workouts"),
-    PLACES("Places");
+    PLACES("Places"),
+    LOG("Quick log");
 
     companion object {
         fun ofTag(tag: String): Kind = when {
             tag.startsWith("sleep:") || tag.startsWith(SleepDay.TAG_PREFIX) -> SLEEP
             tag.startsWith("ex:") -> WORKOUT
+            tag.startsWith(QuickLog.TAG_ROOT) -> LOG
             else -> PLACES
         }
     }
@@ -129,6 +131,7 @@ fun Kind.accent(): Color {
         Kind.SLEEP -> if (dark) Color(0xFFB9BEFF) else Color(0xFF4B53A8)   // dusk indigo
         Kind.WORKOUT -> if (dark) Color(0xFF76D8C4) else Color(0xFF12806E) // kelp teal
         Kind.PLACES -> if (dark) Color(0xFF9CC6F2) else Color(0xFF2468A8)  // harbor blue
+        Kind.LOG -> if (dark) Color(0xFFF2B36B) else Color(0xFF9A5B13)     // coffee amber
     }
 }
 

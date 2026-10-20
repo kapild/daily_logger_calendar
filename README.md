@@ -110,6 +110,17 @@ calories need two extra Health Connect permissions: open Daily Logger and tap
 **Grant Health Connect access** once after updating. The widget refreshes
 after every sync, every 30 minutes, and when you tap ↻.
 
+## Quick log
+
+Log things that leave no data behind: coffee, a meal, a snack, water, alcohol, meds, intimate, a nap, mood, plus
+tiles you add. Each entry becomes a 15-minute event, `Coffee | At: 3:54 am`, with any note in the description.
+
+- **Widget:** add **Quick log** from the home-screen widgets. Tap a tile to log it now; the widget shows today's
+  count on each tile, and for 10 minutes after a tap offers **Undo** and **Edit**.
+- **Log tab:** tap a tile to pick when (now, 15/30/60 minutes ago, or a time), how long, and a note. Tap any
+  entry to change or delete it; the calendar event follows. Switch tiles on or off, add your own, and choose
+  the calendar (it defaults to the places calendar).
+
 ## How sync and repair work
 
 Every run is a reconcile, not a blind export:
@@ -182,4 +193,5 @@ If sleep shows up but workouts don't, check Setup: the workout picker may point 
 | `Laundry.kt` | Turns LG ThinQ notifications into washer and dryer cycles (unit-tested) |
 | `ThinQListener.kt` | Reads LG ThinQ notifications only |
 | `Latency.kt`, `UploadWatch.kt` | Time each new event from happening to on Google |
+| `QuickLog.kt`, `QuickLogWidget.kt`, `LogTab.kt` | Quick log entries, widget and tab |
 | `HealthWidget.kt` | The home-screen widget: tabbed when small, rows when tall |

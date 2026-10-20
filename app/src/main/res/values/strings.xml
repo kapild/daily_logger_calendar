@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="health_widget_description">Sleep, workouts, steps and calories for the last 7 days. Make it taller to see all four at once.</string>
+    <string name="quick_log_widget_description">Tap to log coffee, a meal, water and more to your calendar.</string>
 </resources>

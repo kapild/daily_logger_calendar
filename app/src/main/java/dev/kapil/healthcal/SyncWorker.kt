@@ -52,6 +52,9 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
 
             prefs.lastRunAt = System.currentTimeMillis()
 
+            // Quick log entries made while the calendar couldn't be written.
+            runCatching { QuickLog.sync(ctx) }
+
             // Redraw the home-screen widget with fresh Health Connect numbers.
             try {
                 refreshHealthWidgets(ctx)
