@@ -47,7 +47,7 @@ object PlacesEngine {
         // Read a few extra days so stays that began before the window are understood.
         val signalsFrom = from.minus(Duration.ofDays(3)).toEpochMilli()
         val shuttleNames = config.shuttleSsids
-        val signals = SignalLog.get(context).between(signalsFrom, now).map { s ->
+        val raw = SignalLog.get(context).between(signalsFrom, now).map { s ->
             // A network listed under Shuttle is the shuttle, even if it was logged as a place.
             if (s.type == SignalType.ARRIVE && s.source == "wifi" && s.detail in shuttleNames) {
                 s.copy(type = SignalType.SHUTTLE, place = null)
@@ -55,6 +55,7 @@ object PlacesEngine {
                 s
             }
         }
+        val signals = SignalFilter.clean(raw)
         val geofenced = Place.entries.filter { config.location(it) != null }.toSet()
         val desired = build(PlaceTimeline.build(signals, geofenced), now, calendarId) +
             Laundry.events(signals, now, calendarId)
