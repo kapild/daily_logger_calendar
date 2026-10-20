@@ -144,7 +144,7 @@ Open the **Events** tab and read the card for that calendar:
 | Lives only on the phone | Pick a Google calendar in Setup, then Backfill |
 | Sync is off for this calendar | Tap **Turn on sync** |
 | Hidden in your calendar apps | Tap **Show it** |
-| Calendar sync is off for your account | Tap **Sync now**, or Settings → Passwords & accounts → your account → Account sync → Calendar |
+| Calendar sync is off for your account | Tap **Sync now**, or Settings → Accounts and backup → your account → Account sync → Calendar |
 | Waiting to upload | Tap **Sync now** |
 
 If sleep shows up but workouts don't, check Setup: the workout picker may point at a different calendar. Setup warns you when they differ and offers **Use the sleep calendar for workouts**.
