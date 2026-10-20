@@ -61,6 +61,7 @@ object CalendarReconciler {
             val matches = existing[want.tag].orEmpty().sortedBy { it.eventId }
             if (matches.isEmpty()) {
                 if (CalendarRepo.insert(context, want)) {
+                    runCatching { LatencyLog.recordWritten(context, want) }
                     counts.added++
                     counts.outcomes[want.tag] = Outcome.ADDED
                 } else {
@@ -92,6 +93,7 @@ object CalendarReconciler {
                 }
             }
         }
+        if (counts.added > 0) UploadWatch.schedule(context)
         return counts
     }
 

@@ -137,6 +137,12 @@ Colors: sleep is indigo, workouts are teal, places are blue, everywhere in the a
 
 ## If events don't show up in Google Calendar
 
+**How long it took.** Each event in the **Events** tab says when it happened, how long after that Daily Logger
+wrote it to the calendar, and how long the phone then took to upload it to Google, for example
+`Happened 8:24 am · in calendar 3 min later · on Google 11 min after that`. A card at the top gives the typical
+delays over the last 7 days and the slowest one. Only events written after this update are timed. Google's
+copy reaching your watch or other devices is a further step the phone can't see.
+
 Open the **Events** tab and read the card for that calendar:
 
 | Card says | Fix |
@@ -175,4 +181,5 @@ If sleep shows up but workouts don't, check Setup: the workout picker may point 
 | `WidgetData.kt` | Reads the week from Health Connect and caches it for quick taps |
 | `Laundry.kt` | Turns LG ThinQ notifications into washer and dryer cycles (unit-tested) |
 | `ThinQListener.kt` | Reads LG ThinQ notifications only |
+| `Latency.kt`, `UploadWatch.kt` | Time each new event from happening to on Google |
 | `HealthWidget.kt` | The home-screen widget: tabbed when small, rows when tall |
