@@ -365,15 +365,19 @@ private fun diagnose(c: CalendarCard): Diagnosis {
         canSyncNow = true,
         fixLabel = "Show it",
     )
+    // Android can report sync as off for accounts it doesn't share with this app, even when
+    // Calendar sync is on. If every event has reached Google, sync is evidently working.
+    val allUploaded = c.uploadKnown && c.total > 0 && c.waiting == 0
+    if (allUploaded) return Diagnosis("All ${c.total} events are on Google Calendar.", Tone.GOOD, canSyncNow = true)
     if (s.masterSyncOn == false) return Diagnosis(
-        "Auto-sync is off on this phone, so uploads only happen when you ask. Tap Sync now, or turn on " +
-            "Automatically sync app data in Settings, Passwords & accounts.",
+        "Auto-sync looks off on this phone, so uploads only happen when you ask. Tap Sync now, or turn on " +
+            "Automatically sync app data in Settings, Accounts and backup.",
         Tone.WAIT,
         canSyncNow = true,
     )
     if (s.accountSyncOn == false) return Diagnosis(
-        "Calendar sync is off for ${s.account}. Tap Sync now, or turn it on in Settings, " +
-            "Passwords & accounts, ${s.account}, Account sync, Calendar.",
+        "Calendar sync looks off for ${s.account}. Tap Sync now, or check Settings, Accounts and backup, " +
+            "${s.account}, Account sync, Calendar.",
         Tone.WAIT,
         canSyncNow = true,
     )
