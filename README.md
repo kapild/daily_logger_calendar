@@ -115,8 +115,9 @@ after every sync, every 30 minutes, and when you tap ↻.
 Log things that leave no data behind: coffee, a meal, a snack, water, alcohol, meds, intimate, a nap, mood, plus
 tiles you add. Each entry becomes a 15-minute event, `Coffee | At: 3:54 am`, with any note in the description.
 
-- **Widget:** add **Quick log** from the home-screen widgets. Tap a tile to log it now: the tile turns amber
-  with a ✓ and ignores further taps for 2 minutes, so a double tap logs once. A "Coffee logged" line with
+- **Widget:** add **Quick log** from the home-screen widgets. Tap a tile to log it now: the tile greys out
+  with a ✓ straight away, a "Logging Coffee…" line appears, and the tile ignores further taps for 2 minutes, so
+  a double tap logs once. A "Coffee logged" line with
   **Edit** and **Undo** shows for 15 seconds. Each tile also shows today's count.
 - **Log tab:** tap a tile to pick when (now, 15/30/60 minutes ago, or a time), how long, and a note. Tap any
   entry to change or delete it; the calendar event follows. Switch tiles on or off, add your own, and choose
