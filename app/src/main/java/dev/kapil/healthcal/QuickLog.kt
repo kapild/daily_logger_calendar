@@ -2,6 +2,7 @@ package dev.kapil.healthcal
 
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -35,6 +36,14 @@ data class LogEntry(
 object QuickLog {
     const val TAG_ROOT = "ql:"
     const val DEFAULT_MINUTES = 15
+
+    /** After a widget tap, that tile ignores further taps for this long, so a double tap logs once. */
+    const val COOLDOWN_MS = 2 * 60_000L
+
+    /** How long the "Coffee logged" line with Edit and Undo stays on the widget. */
+    const val CONFIRM_MS = 15_000L
+
+    private val widgetTaps = Mutex()
     private const val KEEP_DAYS = 30L
     private const val PREFS = "quick_log"
 
@@ -72,6 +81,14 @@ object QuickLog {
             .groupingBy { it.tileId }.eachCount()
 
     /** Ids are the tap time in base 36 plus two random characters. */
+    /** The entry that keeps [tileId] locked at [now], if it was tapped less than [COOLDOWN_MS] ago. */
+    fun coolingDown(entries: List<LogEntry>, tileId: String, now: Long): LogEntry? =
+        entries.filter { it.tileId == tileId && now - tappedAt(it) in 0 until COOLDOWN_MS }.maxByOrNull { tappedAt(it) }
+
+    /** The entry to confirm on the widget at [now]: the newest one tapped less than [CONFIRM_MS] ago. */
+    fun toConfirm(entries: List<LogEntry>, now: Long): LogEntry? =
+        entries.maxByOrNull { tappedAt(it) }?.takeIf { now - tappedAt(it) in 0 until CONFIRM_MS }
+
     fun newId(now: Long): String = now.toString(36) + Random.nextInt(36 * 36).toString(36).padStart(2, '0')
 
     /** When the entry was logged (not when it happened). */
@@ -163,6 +180,22 @@ object QuickLog {
         return e
     }
 
+    /**
+     * A widget tap. Taps on a tile that was logged in the last two minutes are
+     * ignored, and taps are handled one at a time, so a double tap logs once.
+     */
+    suspend fun logFromWidget(context: Context, tileId: String): LogEntry? {
+        val entry = widgetTaps.withLock {
+            val tile = tiles(context).firstOrNull { it.id == tileId } ?: return null
+            val now = System.currentTimeMillis()
+            if (coolingDown(entries(context), tileId, now) != null) return null
+            LogEntry(newId(now), tile.id, tile.label, tile.emoji, now, DEFAULT_MINUTES).also { put(context, it) }
+        }
+        changed(context)
+        QuickLogRefresh.scheduleFor(context, tappedAt(entry))
+        return entry
+    }
+
     suspend fun update(context: Context, entry: LogEntry) {
         put(context, entry)
         changed(context)
@@ -174,8 +207,9 @@ object QuickLog {
     }
 
     private suspend fun changed(context: Context) {
-        runCatching { sync(context) }
+        // Redraw first so the tap shows at once; writing the calendar can take a moment.
         runCatching { QuickLogWidget.refresh(context) }
+        runCatching { sync(context) }
     }
 
     /** Make the calendar match the entries. Safe to call any time; does nothing without calendar access. */

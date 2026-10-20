@@ -44,3 +44,23 @@ class QuickLogTest {
         assertEquals(now, QuickLog.tappedAt(LogEntry(id, "coffee", "Coffee", "☕", at(20, 3, 39), 15)))
     }
 }
+
+class QuickLogCooldownTest {
+    private fun tapped(tile: String, at: Long) = LogEntry(QuickLog.newId(at), tile, tile, "", at, 15)
+
+    @Test fun aTileStaysLockedForTwoMinutes() {
+        val t0 = 1_800_000_000_000L
+        val entries = listOf(tapped("coffee", t0))
+        assertEquals(entries[0], QuickLog.coolingDown(entries, "coffee", t0 + 1_000))
+        assertEquals(entries[0], QuickLog.coolingDown(entries, "coffee", t0 + 119_000))
+        assertEquals(null, QuickLog.coolingDown(entries, "coffee", t0 + 120_000))
+        assertEquals(null, QuickLog.coolingDown(entries, "water", t0 + 1_000))
+    }
+
+    @Test fun theLoggedLineShowsForFifteenSeconds() {
+        val t0 = 1_800_000_000_000L
+        val entries = listOf(tapped("coffee", t0 - 60_000), tapped("snack", t0))
+        assertEquals("snack", QuickLog.toConfirm(entries, t0 + 14_000)?.tileId)
+        assertEquals(null, QuickLog.toConfirm(entries, t0 + 15_000))
+    }
+}
