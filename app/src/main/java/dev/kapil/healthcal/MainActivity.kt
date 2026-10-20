@@ -1,5 +1,6 @@
 package dev.kapil.healthcal
 
+import android.content.Intent
 import android.Manifest
 import android.app.DatePickerDialog
 import android.content.Context
@@ -75,11 +76,31 @@ import java.util.Date
 class MainActivity : ComponentActivity() {
     private var resumeTick by mutableIntStateOf(0)
 
+    /** Set when opened from the Quick log widget: open the Log tab, editing this entry if not blank. */
+    private var logRequest by mutableStateOf<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // The header is dark blue in both themes, so keep status bar icons light.
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
-        setContent { AppTheme { AppRoot(resumeTick) } }
+        if (savedInstanceState == null) handle(intent)
+        setContent { AppTheme { AppRoot(resumeTick, logRequest) { logRequest = null } } }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handle(intent)
+    }
+
+    private fun handle(intent: Intent?) {
+        if (intent?.action?.startsWith(ACTION_OPEN_LOG) == true) {
+            logRequest = intent.getStringExtra(EXTRA_ENTRY) ?: ""
+        }
+    }
+
+    companion object {
+        const val ACTION_OPEN_LOG = "dev.kapil.healthcal.OPEN_LOG"
+        const val EXTRA_ENTRY = "entry"
     }
 
     override fun onResume() {
@@ -88,12 +109,22 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private val TABS = listOf("Setup", "Found", "Events")
+private val TABS = listOf("Setup", "Found", "Log", "Events")
+private const val LOG_TAB = 2
 
 @Composable
-fun AppRoot(resumeTick: Int) {
+fun AppRoot(resumeTick: Int, logRequest: String? = null, onLogRequestHandled: () -> Unit = {}) {
     val ctx = LocalContext.current
     var tab by rememberSaveable { mutableIntStateOf(0) }
+    var editEntry by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(logRequest) {
+        if (logRequest != null) {
+            tab = LOG_TAB
+            editEntry = logRequest.ifBlank { null }
+            onLogRequestHandled()
+        }
+    }
 
     // Keep the periodic job registered if auto-sync is on.
     LaunchedEffect(Unit) {
@@ -115,6 +146,7 @@ fun AppRoot(resumeTick: Int) {
             when (tab) {
                 0 -> SetupTab(resumeTick)
                 1 -> FoundTab(resumeTick)
+                LOG_TAB -> LogTab(resumeTick, editEntry) { editEntry = null }
                 else -> EventsTab(resumeTick)
             }
         }
