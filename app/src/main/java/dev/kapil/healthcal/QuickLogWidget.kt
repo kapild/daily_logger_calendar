@@ -62,12 +62,10 @@ private val KEY_REV = longPreferencesKey("rev")
 private val P_TILE = ActionParameters.Key<String>("tile")
 private val P_ENTRY = ActionParameters.Key<String>("entry")
 
-/** How long after a tap the widget offers Undo and Edit. */
-private const val UNDO_MS = 10 * 60_000L
-
 /**
- * Quick log on the home screen: tap a tile to log it now. The last entry
- * stays on the widget for a few minutes with Undo and Edit.
+ * Quick log on the home screen: tap a tile to log it now. The tile turns
+ * amber and ignores taps for two minutes; a line with Edit and Undo shows for
+ * 15 seconds.
  */
 class QuickLogWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
@@ -98,8 +96,8 @@ class QuickLogWidgetReceiver : GlanceAppWidgetReceiver() {
 
 class LogTileNow : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        val tile = QuickLog.tiles(context).firstOrNull { it.id == parameters[P_TILE] } ?: return
-        QuickLog.log(context, tile)
+        val tileId = parameters[P_TILE] ?: return
+        QuickLog.logFromWidget(context, tileId)
     }
 }
 
@@ -125,7 +123,7 @@ private fun QuickLogContent() {
     val counts = QuickLog.countsOn(entries, LocalDate.now(zone), zone)
     val now = System.currentTimeMillis()
     // The newest entry made in the last few minutes, by tap time (its id starts with the tap time).
-    val last = entries.maxByOrNull { QuickLog.tappedAt(it) }?.takeIf { now - QuickLog.tappedAt(it) in 0..UNDO_MS }
+    val last = QuickLog.toConfirm(entries, now)
     val size = LocalSize.current
     val showLast = last != null
     val tileHeight = (((size.height.value - 64f - (if (showLast) 44f else 0f)) / 3f) - 6f).coerceIn(48f, 110f).dp
@@ -149,7 +147,7 @@ private fun QuickLogContent() {
             Row(GlanceModifier.fillMaxWidth()) {
                 row.forEachIndexed { i, t ->
                     if (i > 0) Spacer(GlanceModifier.width(6.dp))
-                    TileButton(t, counts[t.id] ?: 0, tileHeight)
+                    TileButton(t, counts[t.id] ?: 0, tileHeight, QuickLog.coolingDown(entries, t.id, now))
                 }
                 // Keep tiles the same width in a short last row.
                 repeat(3 - row.size) {
@@ -164,23 +162,32 @@ private fun QuickLogContent() {
 }
 
 @Composable
-private fun androidx.glance.layout.RowScope.TileButton(t: Tile, count: Int, height: androidx.compose.ui.unit.Dp) {
-    Column(
-        GlanceModifier
-            .defaultWeight()
-            .height(height)
-            .background(QL_TILE)
-            .cornerRadius(14.dp)
-            .clickable(actionRunCallback<LogTileNow>(actionParametersOf(P_TILE to t.id))),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+private fun androidx.glance.layout.RowScope.TileButton(
+    t: Tile,
+    count: Int,
+    height: androidx.compose.ui.unit.Dp,
+    justLogged: LogEntry?,
+) {
+    val base = GlanceModifier
+        .defaultWeight()
+        .height(height)
+        .background(if (justLogged != null) QL_ACCENT else QL_TILE)
+        .cornerRadius(14.dp)
+    // A tile logged in the last two minutes has no tap action, so a second tap does nothing.
+    val modifier = if (justLogged != null) base else base.clickable(actionRunCallback<LogTileNow>(actionParametersOf(P_TILE to t.id)))
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalAlignment = Alignment.CenterVertically) {
         Text(t.emoji, style = qs(QL_TEXT, if (height.value >= 72f) 24 else 18, align = TextAlign.Center))
-        Text(
-            if (count > 0) "${t.label} · $count" else t.label,
-            style = qs(if (count > 0) QL_ACCENT else QL_TEXT, 12, bold = count > 0, align = TextAlign.Center),
-            maxLines = 1,
-        )
+        val label = when {
+            justLogged != null -> "✓ ${t.label}"
+            count > 0 -> "${t.label} · $count"
+            else -> t.label
+        }
+        val color = when {
+            justLogged != null -> QL_ON_ACCENT
+            count > 0 -> QL_ACCENT
+            else -> QL_TEXT
+        }
+        Text(label, style = qs(color, 12, bold = justLogged != null || count > 0, align = TextAlign.Center), maxLines = 1)
     }
 }
 
