@@ -86,5 +86,6 @@ class BluetoothReceiver : BroadcastReceiver() {
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         PlaceMonitor.registerAll(context)
+        CalendarWatchJob.ensureScheduled(context)
     }
 }

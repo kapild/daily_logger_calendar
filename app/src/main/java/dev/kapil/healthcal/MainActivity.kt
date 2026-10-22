@@ -1,5 +1,6 @@
 package dev.kapil.healthcal
 
+import kotlinx.coroutines.launch
 import android.content.Intent
 import android.Manifest
 import android.app.DatePickerDialog
@@ -363,7 +364,11 @@ fun SetupTab(resumeTick: Int) {
             PlacesSection(resumeTick, calGranted, calendars)
         }
 
-        Section("5. Sync") {
+        Section("5. Next Up watch face") {
+            WatchFeedSection(resumeTick)
+        }
+
+        Section("6. Sync") {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Backfill from $dateLabel", Modifier.weight(1f))
                 TextButton(onClick = {
@@ -477,3 +482,32 @@ internal fun CalendarPicker(calendars: List<CalendarInfo>, selectedId: Long, onS
 internal fun hasCalendarPermission(ctx: Context): Boolean =
     ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED &&
         ContextCompat.checkSelfPermission(ctx, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED
+
+/** What was last sent to the Next Up watch app, with a button to send now. */
+@Composable
+private fun WatchFeedSection(resumeTick: Int) {
+    val ctx = LocalContext.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var status by remember { mutableStateOf(WatchFeed.status(ctx)) }
+    var sending by remember { mutableStateOf(false) }
+    LaunchedEffect(resumeTick) {
+        CalendarWatchJob.ensureScheduled(ctx)
+        status = WatchFeed.push(ctx)
+    }
+    Text(
+        "Sends the next week of every calendar on this phone, and last night's sleep, to the Next Up face on " +
+            "your watch. It updates whenever your calendar changes.",
+        style = MaterialTheme.typography.bodySmall,
+    )
+    Text(status, style = MaterialTheme.typography.bodyMedium)
+    OutlinedButton(
+        enabled = !sending,
+        onClick = {
+            sending = true
+            scope.launch {
+                status = WatchFeed.push(ctx, force = true)
+                sending = false
+            }
+        },
+    ) { Text(if (sending) "Sending…" else "Send now") }
+}

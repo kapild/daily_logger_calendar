@@ -47,6 +47,9 @@ dependencies {
 
     implementation("androidx.work:work-runtime-ktx:2.10.1")
 
+    // Sends events and sleep to the Next Up watch app
+    implementation("com.google.android.gms:play-services-wearable:18.2.0")
+
     // Home-screen widget
     implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
@@ -55,4 +58,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
     testImplementation("junit:junit:4.13.2")
+    // Android's JSON classes are empty stubs in local unit tests.
+    testImplementation("org.json:json:20240303")
 }

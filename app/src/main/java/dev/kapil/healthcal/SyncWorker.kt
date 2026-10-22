@@ -55,6 +55,10 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
             // Quick log entries made while the calendar couldn't be written.
             runCatching { QuickLog.sync(ctx) }
 
+            // Send the Next Up watch face this week's events and last night's sleep.
+            runCatching { WatchFeed.push(ctx) }
+            CalendarWatchJob.ensureScheduled(ctx)
+
             // Redraw the home-screen widget with fresh Health Connect numbers.
             try {
                 refreshHealthWidgets(ctx)
