@@ -110,6 +110,12 @@
             </intent-filter>
         </receiver>
 
+        <!-- Sends the Next Up watch app a fresh feed when the calendar changes -->
+        <service
+            android:name=".CalendarWatchJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <!-- Notes when new events reach Google, for the delay shown in the Events tab -->
         <service
             android:name=".UploadWatch"

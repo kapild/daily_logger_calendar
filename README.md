@@ -123,6 +123,17 @@ tiles you add. Each entry becomes a 15-minute event, `Coffee | At: 3:54 am`, wit
   entry to change or delete it; the calendar event follows. Switch tiles on or off, add your own, and choose
   the calendar (it defaults to the places calendar).
 
+## Next Up watch face
+
+Daily Logger feeds the [Next Up](https://github.com/kapild/pixel_watch_calendar) watch face: the next week of
+every visible calendar on the phone (recurring events expanded, cancelled and declined ones left out, and
+Daily Logger's own events skipped) plus last night's sleep from Health Connect. It goes over the Wear data
+layer whenever the calendar changes, after each sync, and when you open the app. **Setup > 5. Next Up watch
+face** shows what was last sent and has a **Send now** button.
+
+This works because the watch app has the same application id, `dev.kapil.healthcal`. Install both from the
+same Android Studio so they share a signing key.
+
 ## How sync and repair work
 
 Every run is a reconcile, not a blind export:
@@ -196,4 +207,5 @@ If sleep shows up but workouts don't, check Setup: the workout picker may point 
 | `ThinQListener.kt` | Reads LG ThinQ notifications only |
 | `Latency.kt`, `UploadWatch.kt` | Time each new event from happening to on Google |
 | `QuickLog.kt`, `QuickLogWidget.kt`, `LogTab.kt` | Quick log entries, widget and tab |
+| `WatchFeed.kt` | Sends events and sleep to the Next Up watch app |
 | `HealthWidget.kt` | The home-screen widget: tabbed when small, rows when tall |
