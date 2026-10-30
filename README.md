@@ -110,6 +110,17 @@ calories need two extra Health Connect permissions: open Daily Logger and tap
 **Grant Health Connect access** once after updating. The widget refreshes
 after every sync, every 30 minutes, and when you tap ↻.
 
+## Next Up widget
+
+A home-screen widget for the day around now: the last two events that ended (side by side, with how long ago),
+a red **Now** line, and the next two with a countdown, each in its own tile. Bars use a 2-hour scale: an
+upcoming event's bar fills as it gets closer, a finished one's shrinks as it recedes, and an event in progress
+turns orange with "ends in 12 min" and a bar of the time left. Tap an event to open it in Calendar.
+
+It reads the same calendars Daily Logger sends to the watch (every visible calendar; all-day events and Daily
+Logger's own logs left out). It redraws every minute while the phone is awake and straight away when the
+calendar changes. Add it from the home-screen widgets: **Daily Logger > Next Up**.
+
 ## Quick log
 
 Log things that leave no data behind: coffee, a meal, a snack, water, alcohol, meds, intimate, a nap, mood, plus
@@ -208,4 +219,5 @@ If sleep shows up but workouts don't, check Setup: the workout picker may point 
 | `Latency.kt`, `UploadWatch.kt` | Time each new event from happening to on Google |
 | `QuickLog.kt`, `QuickLogWidget.kt`, `LogTab.kt` | Quick log entries, widget and tab |
 | `WatchFeed.kt` | Sends events and sleep to the Next Up watch app |
+| `NextUpBoard.kt`, `NextUpBoardWidget.kt` | The Next Up home-screen widget |
 | `HealthWidget.kt` | The home-screen widget: tabbed when small, rows when tall |

@@ -133,6 +133,19 @@
             </intent-filter>
         </service>
 
+        <!-- Next Up widget: last two events, now, next two -->
+        <receiver
+            android:name=".NextUpBoardReceiver"
+            android:label="Next Up"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/next_up_widget_info" />
+        </receiver>
+
         <!-- Quick log widget: one tap writes a short event -->
         <receiver
             android:name=".QuickLogWidgetReceiver"
