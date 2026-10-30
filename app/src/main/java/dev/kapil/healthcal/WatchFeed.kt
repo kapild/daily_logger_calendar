@@ -30,6 +30,8 @@ data class FeedEvent(
     val allDay: Boolean,
     val location: String?,
     val calendar: String?,
+    /** The phone's event id, for opening it in Calendar; not sent to the watch. */
+    val eventId: Long = -1,
 )
 
 /**
@@ -90,6 +92,7 @@ object WatchFeed {
             CalendarContract.Instances.CALENDAR_DISPLAY_NAME,
             CalendarContract.Instances.DESCRIPTION,
             CalendarContract.Instances.SELF_ATTENDEE_STATUS,
+            CalendarContract.Instances.EVENT_ID,
         )
         // STATUS is often empty, so a plain "!= cancelled" would drop those events too.
         val selection = "${CalendarContract.Instances.VISIBLE} = 1 AND (${CalendarContract.Instances.STATUS} IS NULL OR " +
@@ -111,6 +114,7 @@ object WatchFeed {
                     allDay = c.getInt(3) != 0,
                     location = c.getString(4),
                     calendar = c.getString(5),
+                    eventId = c.getLong(8),
                 )
             }
         }
@@ -172,6 +176,7 @@ class CalendarWatchJob : JobService() {
     override fun onStartJob(params: JobParameters): Boolean {
         Thread {
             runBlocking { runCatching { WatchFeed.push(applicationContext) } }
+            runCatching { NextUpBoardWidget.refresh(applicationContext) }
             schedule(applicationContext) // a content-triggered job fires once
             jobFinished(params, false)
         }.start()

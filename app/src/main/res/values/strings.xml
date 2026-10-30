@@ -2,4 +2,5 @@
 <resources>
     <string name="health_widget_description">Sleep, workouts, steps and calories for the last 7 days. Make it taller to see all four at once.</string>
     <string name="quick_log_widget_description">Tap to log coffee, a meal, water and more to your calendar.</string>
+    <string name="next_up_widget_description">The last two events and how long ago they ended, and how long until the next two.</string>
 </resources>

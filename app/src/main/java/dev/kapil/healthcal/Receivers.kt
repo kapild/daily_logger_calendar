@@ -1,5 +1,7 @@
 package dev.kapil.healthcal
 
+import android.content.ComponentName
+import android.appwidget.AppWidgetManager
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -87,5 +89,12 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         PlaceMonitor.registerAll(context)
         CalendarWatchJob.ensureScheduled(context)
+        // Alarms don't survive a reboot or update; restart the Next Up widget's minute tick.
+        NextUpBoardWidget.refresh(context)
+        if (AppWidgetManager.getInstance(context)
+                .getAppWidgetIds(ComponentName(context, NextUpBoardReceiver::class.java)).isNotEmpty()
+        ) {
+            NextUpBoardWidget.arm(context)
+        }
     }
 }
