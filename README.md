@@ -110,6 +110,20 @@ calories need two extra Health Connect permissions: open Daily Logger and tap
 **Grant Health Connect access** once after updating. The widget refreshes
 after every sync, every 30 minutes, and when you tap ↻.
 
+## Insights
+
+The **Insights** tab shows work and commute patterns, built from Daily Logger's own places events in the
+calendar (the "At work" stays and the commute trips):
+
+- **Summary:** average time at the office, commute each way, when you leave home and get back, each compared
+  with the period before (last 14 days vs the 14 before; 45 or 30 days for the longer ranges).
+- **Each office day, door to door:** commute in, office, commute home on a 6 am – 9 pm scale; shuttle legs in orange.
+- **Week by week / month by month:** hours at the office and one-way commute.
+- **Heatmaps:** when you leave home and when you get back, by weekday in half-hour slots.
+
+Ranges: 4 weeks, 3 months, or everything kept (raw signals are kept on the phone for 400 days; the calendar
+events stay in Google Calendar). Overlapping stays are counted once.
+
 ## Next Up widget
 
 A home-screen widget for the day around now: the last two events that ended (side by side, with how long ago),
@@ -220,4 +234,5 @@ If sleep shows up but workouts don't, check Setup: the workout picker may point 
 | `QuickLog.kt`, `QuickLogWidget.kt`, `LogTab.kt` | Quick log entries, widget and tab |
 | `WatchFeed.kt` | Sends events and sleep to the Next Up watch app |
 | `NextUpBoard.kt`, `NextUpBoardWidget.kt` | The Next Up home-screen widget |
+| `CommuteStats.kt`, `InsightsTab.kt` | Work and commute insights (stats unit-tested) |
 | `HealthWidget.kt` | The home-screen widget: tabbed when small, rows when tall |
