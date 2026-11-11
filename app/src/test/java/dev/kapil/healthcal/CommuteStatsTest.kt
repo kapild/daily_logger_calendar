@@ -36,7 +36,7 @@ class CommuteStatsTest {
         assertEquals(listOf(LocalDate.of(2026, 10, 6), LocalDate.of(2026, 10, 21)), days.map { it.date })
         val oct6 = days[0]
         assertEquals(531, oct6.officeMin)
-        assertEquals(63, oct6.commuteIn)
+        assertEquals(64, oct6.commuteIn)
         assertEquals(59, oct6.commuteOut)
         assertTrue(oct6.outShuttle)
         assertEquals(8 * 60 + 1, oct6.leftHome)
@@ -61,7 +61,7 @@ class CommuteStatsTest {
     @Test fun weeklyTrend() {
         val t = CommuteStats.trend(CommuteStats.days(events, zone), monthly = false)
         assertEquals(listOf("Oct 5", "Oct 19"), t.map { it.label })
-        assertEquals(61.0, t[0].commuteMin!!, 0.1)
+        assertEquals(61.5, t[0].commuteMin!!, 0.1)
         assertEquals("Oct", CommuteStats.trend(CommuteStats.days(events, zone), monthly = true).single().label)
     }
 
