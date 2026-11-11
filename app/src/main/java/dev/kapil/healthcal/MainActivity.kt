@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private val TABS = listOf("Setup", "Found", "Log", "Events")
+private val TABS = listOf("Setup", "Found", "Log", "Insights", "Events")
 private const val LOG_TAB = 2
 
 @Composable
@@ -148,6 +148,7 @@ fun AppRoot(resumeTick: Int, logRequest: String? = null, onLogRequestHandled: ()
                 0 -> SetupTab(resumeTick)
                 1 -> FoundTab(resumeTick)
                 LOG_TAB -> LogTab(resumeTick, editEntry) { editEntry = null }
+                3 -> InsightsTab(resumeTick)
                 else -> EventsTab(resumeTick)
             }
         }
