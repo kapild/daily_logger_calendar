@@ -300,7 +300,7 @@ private fun Heatmap(grid: Array<IntArray>, from: LocalTime, colors: InsightColor
     Canvas(
         Modifier
             .fillMaxWidth()
-            .height(5 * 24.dp + 18.dp),
+            .height((5 * 24 + 18).dp),
     ) {
         val labelW = 34.dp.toPx()
         val cols = grid[0].size
